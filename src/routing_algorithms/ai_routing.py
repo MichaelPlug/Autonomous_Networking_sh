@@ -4,12 +4,67 @@ from src.utilities import utilities as util
 from src.routing_algorithms.BASE_routing import BASE_routing
 from matplotlib import pyplot as plt
 
+
+"""
+"""
+
+import random
+
+
+q = [1,1,1,0,4]
+
+n = [4,5,9,3,1]
+
+k = len(q)
+
+i = 0
+
+for _ in q:
+    
+    
+    q[i] = 0
+    
+    n[i] = 0
+    
+    i += 1
+    
+
+#epsilon must be smaller
+min_epsilon = 0
+max_epsilon = 0.25
+
+
+epsilon = random.random()
+epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
+
+"""
+"""
+
+
+yet_happened = []
+
+
+
+
+
 class AIRouting(BASE_routing):
+    
+    
+    
     def __init__(self, drone, simulator):
         BASE_routing.__init__(self, drone, simulator)
         # random generator
         self.rnd_for_routing_ai = np.random.RandomState(self.simulator.seed)
         self.taken_actions = {}  #id event : (old_action)
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
     def feedback(self, drone, id_event, delay, outcome):
         """ return a possible feedback, if the destination drone has received the packet """
@@ -24,9 +79,43 @@ class AIRouting(BASE_routing):
         # NOTE: reward or update using the old action!!
         # STORE WHICH ACTION DID YOU TAKE IN THE PAST.
         # do something or train the model (?)
-        if id_event in self.taken_actions:
-            action = self.taken_actions[id_event]
-            del self.taken_actions[id_event]
+        
+        if (id_event not in yet_happened):
+            
+            
+        
+        
+        
+        
+            if id_event in self.taken_actions:
+                action = self.taken_actions[id_event]
+                del self.taken_actions[id_event]
+    
+        
+    
+            if (outcome == -1):
+                
+                R = -1
+            
+            else:
+                
+                R = 1000
+    
+        
+            
+    
+            
+            n[self.drone.identifier] += 1
+            
+            
+    
+            
+            q[self.drone.identifier] = q[self.drone.identifier] + ((1/(n[self.drone.identifier]))*(R - q[self.drone.identifier])) 
+             
+            
+            
+            
+
 
     def relay_selection(self, opt_neighbors, pkd):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
@@ -47,9 +136,63 @@ class AIRouting(BASE_routing):
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
-
+        
+        
+        """
+        """
+        #in a certain moment i have k neighbours and we must select one of them
+        #self.q[0] +=1
+        """
+        "REINFORCEMENT LEARNING RANDOM"
+        max_action = None
+        list_neightbours = []
+        for hello_packet, drone_istance in opt_neighbors:
+            
+            list_neightbours.append(drone_istance)
+        
+        max_action = random.choice(list_neightbours)
+        
+        return max_action
+        "FINE REINFORCEMENT LEARNING RANDOM"
+        """
+        
+        
+        
+        rand = random.random()
+        
+        if (rand < (1-epsilon)):
+            
+            max_q = 0
+            
+            max_action = None
+            
+            for hello_packet, drone_istance in opt_neighbors:
+                
+                if (q[drone_istance.identifier] > max_q):
+                    
+                    max_q = q[drone_istance.identifier]
+                    
+                    max_action = drone_istance
+                    
+        else:
+            
+            max_action = None
+            list_neightbours = []
+            for hello_packet, drone_istance in opt_neighbors:
+                
+                list_neightbours.append(drone_istance)
+            
+            max_action = random.choice(list_neightbours)
+            
+        return max_action
+                        
+        
         #we take all hello packets and all istances of drones
         for hello_packet, drone_istance in opt_neighbors:
+            
+            
+           
+            
             
             """
             
@@ -179,7 +322,8 @@ class AIRouting(BASE_routing):
                 best_drone = drone_istance
                 time_taken_best = best_drone_distance_from_depot / hello_packet.speed
                 
-                
+            
+            """
             elif (best_drone != None and exp_distance >= best_drone_distance_from_depot and best_drone.next_target() == hello_packet.next_target):
                 
                 if (time_taken < time_taken_best):
@@ -188,7 +332,7 @@ class AIRouting(BASE_routing):
                     best_drone = drone_istance
                     time_taken_best = best_drone_distance_from_depot / hello_packet.speed
             
-            
+            """
 
             
             """
