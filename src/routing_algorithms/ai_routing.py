@@ -1,3 +1,7 @@
+"""
+PER CHI LEGGERÀ: NON SO COME IMPORTARE DA SRC.UTILITIES.CONFIG IL NUMERO 
+DI DRONI CHE SONO INIZIALIZZATI LÀ
+"""
 
 import numpy as np
 from src.utilities import utilities as util
@@ -5,46 +9,47 @@ from src.routing_algorithms.BASE_routing import BASE_routing
 from matplotlib import pyplot as plt
 
 
-"""
-"""
+#TO FIX TO OBTAIN THE NUMBER OF DRONES (COSTANT OF CONFIG.PY)
+import src.utilities.config as config
 
+#GLOBAL THINGS
+
+#import the library for random values
 import random
 
+#each element indicates scores calculated for each drone
+q = []
 
-q = [1,1,1,0,4]
+#each element indicates attempts executed for each drone
+n = []
 
-n = [4,5,9,3,1]
-
-k = len(q)
-
-i = 0
-
-for _ in q:
+#create lists
+for _ in range(5):
+    
+    #we assume to have optimistic initial value as strategy for action selection
+    q.append(2)
+    
+    #initially we have zero attempts for each element
+    n.append(0)
     
     
-    q[i] = 0
-    
-    n[i] = 0
-    
-    i += 1
-    
+#seed for random values, just to have consistence on values 
+#TODO
+#eliminate after a while
+random.seed(2)
 
-#epsilon must be smaller
+#epsilon must be smaller and it represents probability for epsilon-greedy
 min_epsilon = 0
-max_epsilon = 0.25
+max_epsilon = 0.5#0.50
 
-
+#take a random value between 0,1
 epsilon = random.random()
+
+#normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
-"""
-"""
-
-
+#list of yet taken feedback
 yet_happened = []
-
-
-
 
 
 class AIRouting(BASE_routing):
@@ -56,14 +61,6 @@ class AIRouting(BASE_routing):
         # random generator
         self.rnd_for_routing_ai = np.random.RandomState(self.simulator.seed)
         self.taken_actions = {}  #id event : (old_action)
-        
-        
-        
-        
-        
-        
-        
-        
         
 
     def feedback(self, drone, id_event, delay, outcome):
@@ -80,43 +77,48 @@ class AIRouting(BASE_routing):
         # STORE WHICH ACTION DID YOU TAKE IN THE PAST.
         # do something or train the model (?)
         
+        
+        #if the packet isn't still treated, then we train system for it
         if (id_event not in yet_happened):
-            
-            
         
-        
-        
-        
+            #add it to list of visited packet (to avoid duplicates)
+            yet_happened.append(id_event)    
+
+            "Doubt: i don't know the utility of this"        
             if id_event in self.taken_actions:
                 action = self.taken_actions[id_event]
                 del self.taken_actions[id_event]
-    
-        
-    
+            "End of doubt"
+                
+            #if the packet is arrived isn't more valid
             if (outcome == -1):
                 
-                R = -1
+                #we obtain a small reward 
+                R = 0.5
             
+            #if the packet arrived
             else:
+                          
+                #opposite of delay
+                temp = 2000 - delay
                 
-                R = 1000
-    
-        
+                #we obtain a linear reward based on the delay --> 
+                #more the delay and value more close value to 1... 
+                #less the delay and value more close to 2 
+                temp = (temp - 0) / (2000 - 0)
+                
+                #take the reward
+                R = 1 + temp 
+                
+            #add attempts for the starting drone that has initially the packet
+            #TODO
+            #maybe also for all the path of packets to incentive them
+            n[drone.identifier] += 1
             
-    
-            
-            n[self.drone.identifier] += 1
-            
-            
-    
-            
-            q[self.drone.identifier] = q[self.drone.identifier] + ((1/(n[self.drone.identifier]))*(R - q[self.drone.identifier])) 
+            #calculate incrementally the reward
+            q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
              
             
-            
-            
-
-
     def relay_selection(self, opt_neighbors, pkd):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
 
@@ -124,24 +126,12 @@ class AIRouting(BASE_routing):
         
         #we take our distance from the depot
         best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-        
-        d = self.drone.next_target()
-        
-        
-        time_taken_best = best_drone_distance_from_depot / self.drone.speed
-        
-        
        
-        
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
         
         
-        """
-        """
-        #in a certain moment i have k neighbours and we must select one of them
-        #self.q[0] +=1
         """
         "REINFORCEMENT LEARNING RANDOM"
         max_action = None
@@ -153,39 +143,57 @@ class AIRouting(BASE_routing):
         max_action = random.choice(list_neightbours)
         
         return max_action
-        "FINE REINFORCEMENT LEARNING RANDOM"
+        "END REINFORCEMENT LEARNING RANDOM"
         """
         
         
-        
+        #generate a random value between 0 and 1
         rand = random.random()
         
+        #with 1 - epsilon probability we choose the greedy approach
         if (rand < (1-epsilon)):
             
-            max_q = 0
+            #take the maximum value of q
+            max_q = q[self.drone.identifier]
             
+            #initially the packet remains with us
             max_action = None
             
+            #loop for every neighbors
             for hello_packet, drone_istance in opt_neighbors:
                 
+                #if we have a more reliable node
                 if (q[drone_istance.identifier] > max_q):
                     
+                    #select its best value for q function
                     max_q = q[drone_istance.identifier]
                     
+                    #select it
                     max_action = drone_istance
                     
+            
+        #with epsilon probability we choose the random approach
         else:
             
-            max_action = None
-            list_neightbours = []
+            #create the list of neighbors
+            list_neighbors = []
+            
+            #loop for every drones
             for hello_packet, drone_istance in opt_neighbors:
                 
-                list_neightbours.append(drone_istance)
+                #append istances of the drones
+                list_neighbors.append(drone_istance)
+                
+            #select one drone randomly
+            max_action = random.choice(list_neighbors)
             
-            max_action = random.choice(list_neightbours)
-            
+        #return this random drone
         return max_action
                         
+        
+        #HERE BEGIN THE GEOGRAPHICAL ROUTING, BUT WE DON'T ARRIVE UNTIL HERE
+        #TODO
+        #A GOOD POSSIBLE IDEA IS TO COMBINE THIS REINFORCEMENT LEARNING WITH GEOGRAPHICAL ROUTING
         
         #we take all hello packets and all istances of drones
         for hello_packet, drone_istance in opt_neighbors:
@@ -369,4 +377,6 @@ class AIRouting(BASE_routing):
             This method is called at the end of the simulation, can be usefull to print some
                 metrics about the learning process
         """
+        
+        print("Hello", q,n)
         pass
