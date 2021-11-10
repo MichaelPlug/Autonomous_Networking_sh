@@ -146,7 +146,7 @@ class AIRouting(BASE_routing):
         "END REINFORCEMENT LEARNING RANDOM"
         """
         
-        
+        '''
         #generate a random value between 0 and 1
         rand = random.random()
         
@@ -188,8 +188,8 @@ class AIRouting(BASE_routing):
             max_action = random.choice(list_neighbors)
             
         #return this random drone
-        return max_action
-                        
+        #return max_action
+         '''               
         
         #HERE BEGIN THE GEOGRAPHICAL ROUTING, BUT WE DON'T ARRIVE UNTIL HERE
         #TODO
@@ -313,7 +313,8 @@ class AIRouting(BASE_routing):
                 
                 "input()"
             """  
-            exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
+         #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
+            exp_position = self.compute_cross_point(hello_packet)
             exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
             
             
@@ -380,3 +381,75 @@ class AIRouting(BASE_routing):
         
         print("Hello", q,n)
         pass
+
+
+    def compute_extimed_position(self, hello_packet):
+        # get and save useful information about hello_packet
+        hello_packet_time = hello_packet.time_step_creation
+        hello_packet_position = hello_packet.cur_pos
+        hello_packet_speed = hello_packet.speed
+        hello_packet_next_target = hello_packet.next_target
+
+        # compute the difference in second beetween now and the hello_packet_time
+        dif_time = (self.simulator.cur_step - hello_packet_time) * self.simulator.time_step_duration 
+
+        # calculete the distance traveled by drone in time dif_time
+        distance_traveled = dif_time * hello_packet_speed
+
+        # compute the direction vector
+        a, b = np.asarray(hello_packet_position), np.asarray(hello_packet_next_target)
+        v = (b - a) / np.linalg.norm(b - a)
+
+
+        # compute the expect position
+        c = a + (distance_traveled * v)
+
+        return tuple(c)
+
+    def compute_cross_point(self, hello_packet):
+
+        exp_pos = self.compute_extimed_position(hello_packet)
+
+        hello_packet_speed = hello_packet.speed
+        hello_packet_next_target = hello_packet.next_target
+
+        # compute the direction vector
+        a, b = np.asarray(exp_pos), np.asarray(hello_packet_next_target)
+    #    v = (b - a) / np.linalg.norm(b - a)
+
+        return self.myFunction(a, b, hello_packet_speed , -1)
+
+    def myFunction(self, start_point, end_point, speed, exMyTime):
+        mid_point = (start_point + end_point)/2
+
+        distance_traveled = util.euclidean_distance(start_point, mid_point)
+        time = distance_traveled/speed
+
+        mySpeed = self.drone.speed
+        myCoords = self.drone.coords
+
+        distance_todo = util.euclidean_distance(myCoords, mid_point)
+        myTime = distance_todo/mySpeed
+        difTime = myTime - time
+        epsilon = 9.5
+        print(difTime)
+
+        if myTime == exMyTime:
+            return mid_point
+
+        if abs(difTime) < epsilon:
+            print("eeeepsilon")
+            return mid_point
+        elif start_point[0] == end_point[0] and start_point[1] == end_point[1]:
+            print(start_point)
+            print(end_point)
+            print("ciao bello")
+            return start_point
+        elif difTime > 0:
+            print("sono lui")
+            return self.myFunction(start_point, mid_point, speed, myTime)
+        elif difTime < 0:
+            print("sono io ")
+            return self.myFunction(mid_point, end_point, speed, myTime)
+
+        return mid_point
