@@ -4,6 +4,7 @@ DI DRONI CHE SONO INIZIALIZZATI LÀ
 """
 
 import numpy as np
+import math
 from numpy.core.numeric import NaN
 from src.utilities import utilities as util
 from src.routing_algorithms.BASE_routing import BASE_routing
@@ -322,7 +323,7 @@ class AIRouting(BASE_routing):
             
 
             
-            time_taken = exp_distance / hello_packet.speed
+           # time_taken = exp_distance / hello_packet.speed
             
             
             
@@ -333,7 +334,7 @@ class AIRouting(BASE_routing):
             if exp_distance < best_drone_distance_from_depot:
                 best_drone_distance_from_depot = exp_distance
                 best_drone = drone_istance
-                time_taken_best = best_drone_distance_from_depot / hello_packet.speed
+              #  time_taken_best = best_drone_distance_from_depot / hello_packet.speed
                 
             
             """
@@ -481,8 +482,25 @@ class AIRouting(BASE_routing):
         end_x = hello_packet.next_target[0]
         end_y = hello_packet.next_target[1]
 
-
+        return self.pnt2line(self.drone.coords, exp_position, hello_packet.next_target)
         return self.myDist(start_x, start_y, end_x, end_y, point_x, point_y)
+
+    def pnt2line(self, pnt, start, end):
+        line_vec = self.vector(start, end)
+        pnt_vec = self.vector(start, pnt)
+        line_len = self.length(line_vec)
+        line_unitvec = self.unit(line_vec)
+        pnt_vec_scaled = self.scale(pnt_vec, 1.0/line_len)
+        t = self.dot(line_unitvec, pnt_vec_scaled)    
+        if t < 0.0:
+            t = 0.0
+        elif t > 1.0:
+            t = 1.0
+        nearest = self.scale(line_vec, t)
+        dist = self.distance(nearest, pnt_vec)
+      #  nearest = add(nearest, start)
+        return dist
+
 
     def myDist(self, x1, y1, x2, y2, x3, y3): # x3,y3 is the point
         px = x2-x1
@@ -512,3 +530,35 @@ class AIRouting(BASE_routing):
         dist = (dx*dx + dy*dy)**.5
 
         return dist 
+
+
+    def dot(self, v,w):
+        x,y = v
+        X,Y = w
+        return x*X + y*Y
+
+    def length(self, v):
+        x,y = v
+        return math.sqrt(x*x + y*y)
+
+    def vector(self, b,e):
+        x,y = b
+        X,Y = e
+        return (X-x, Y-y)
+
+    def unit(self, v):
+        x,y = v
+        mag = self.length(v)
+        return (x/mag, y/mag)
+
+    def distance(self, p0,p1):
+        return self.length(self.vector(p0,p1))
+
+    def scale(self, v,sc):
+        x,y = v
+        return (x * sc, y * sc)
+
+    def add(self, v,w):
+        x,y = v
+        X,Y = w
+        return (x+X, y+Y)
