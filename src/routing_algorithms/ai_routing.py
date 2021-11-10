@@ -4,6 +4,7 @@ DI DRONI CHE SONO INIZIALIZZATI LÀ
 """
 
 import numpy as np
+from numpy.core.numeric import NaN
 from src.utilities import utilities as util
 from src.routing_algorithms.BASE_routing import BASE_routing
 from matplotlib import pyplot as plt
@@ -314,9 +315,12 @@ class AIRouting(BASE_routing):
                 "input()"
             """  
          #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
-            exp_position = self.compute_cross_point(hello_packet)
-            exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
+         #   exp_position = self.compute_cross_point(hello_packet)
+      #      exp_position = self.compute_extimed_position(hello_packet)
+        #    exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
+            exp_distance = self.compute_distance_to_trajectory(hello_packet)
             
+
             
             time_taken = exp_distance / hello_packet.speed
             
@@ -417,9 +421,14 @@ class AIRouting(BASE_routing):
         a, b = np.asarray(exp_pos), np.asarray(hello_packet_next_target)
     #    v = (b - a) / np.linalg.norm(b - a)
 
+
+
+
         return self.myFunction(a, b, hello_packet_speed , -1)
 
     def myFunction(self, start_point, end_point, speed, exMyTime):
+
+        import math
         mid_point = (start_point + end_point)/2
 
         distance_traveled = util.euclidean_distance(start_point, mid_point)
@@ -427,29 +436,79 @@ class AIRouting(BASE_routing):
 
         mySpeed = self.drone.speed
         myCoords = self.drone.coords
-
         distance_todo = util.euclidean_distance(myCoords, mid_point)
+        isMovingAway = util.euclidean_distance(myCoords, start_point) < util.euclidean_distance(myCoords, end_point)
         myTime = distance_todo/mySpeed
         difTime = myTime - time
-        epsilon = 9.5
-        print(difTime)
+        epsilon = 1
 
         if myTime == exMyTime:
             return mid_point
 
+        if math.isnan(myTime):
+            return mid_point
+
         if abs(difTime) < epsilon:
-            print("eeeepsilon")
             return mid_point
         elif start_point[0] == end_point[0] and start_point[1] == end_point[1]:
-            print(start_point)
-            print(end_point)
-            print("ciao bello")
+
             return start_point
+        elif isMovingAway:
+            return self.myFunction(start_point, mid_point, speed, myTime)
+        else:
+            return self.myFunction(mid_point, end_point, speed, myTime)
+        '''
         elif difTime > 0:
             print("sono lui")
             return self.myFunction(start_point, mid_point, speed, myTime)
         elif difTime < 0:
             print("sono io ")
             return self.myFunction(mid_point, end_point, speed, myTime)
+            '''
 
         return mid_point
+
+    def compute_distance_to_trajectory(self, hello_packet):
+        point_x = self.drone.coords[0]
+        point_y = self.drone.coords[1]
+
+        exp_position = self.compute_extimed_position(hello_packet)
+
+
+        start_x = exp_position[0]
+        start_y = exp_position[1]
+
+        end_x = hello_packet.next_target[0]
+        end_y = hello_packet.next_target[1]
+
+
+        return self.myDist(start_x, start_y, end_x, end_y, point_x, point_y)
+
+    def myDist(self, x1, y1, x2, y2, x3, y3): # x3,y3 is the point
+        px = x2-x1
+        py = y2-y1
+
+        norm = px*px + py*py
+
+        u =  ((x3 - x1) * px + (y3 - y1) * py) / float(norm)
+
+        if u > 1:
+            u = 1
+        elif u < 0:
+            u = 0
+
+        x = x1 + u * px
+        y = y1 + u * py
+
+        dx = x - x3
+        dy = y - y3
+
+    # Note: If the actual distance does not matter,
+    # if you only want to compare what this function
+    # returns to other results of this function, you
+    # can just return the squared distance instead
+    # (i.e. remove the sqrt) to gain a little performance
+
+        dist = (dx*dx + dy*dy)**.5
+
+        return dist 
