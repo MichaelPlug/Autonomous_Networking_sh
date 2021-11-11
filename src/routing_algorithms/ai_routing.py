@@ -386,30 +386,22 @@ class AIRouting(BASE_routing):
         
         print("Hello", q,n)
         pass
-
-
     def compute_extimed_position(self, hello_packet):
-        # get and save useful information about hello_packet
-        hello_packet_time = hello_packet.time_step_creation
-        hello_packet_position = hello_packet.cur_pos
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target
-
         # compute the difference in second beetween now and the hello_packet_time
-        dif_time = (self.simulator.cur_step - hello_packet_time) * self.simulator.time_step_duration 
+        dif_time = (self.simulator.cur_step - hello_packet.time_step_creation) * self.simulator.time_step_duration 
 
         # calculete the distance traveled by drone in time dif_time
-        distance_traveled = dif_time * hello_packet_speed
+        distance_traveled = dif_time * hello_packet.speed
 
         # compute the direction vector
-        a, b = np.asarray(hello_packet_position), np.asarray(hello_packet_next_target)
-        v = (b - a) / np.linalg.norm(b - a)
+        cur_pos_array, next_target_array = np.asarray(hello_packet.cur_pos), np.asarray(hello_packet.next_target)
+        speed_array = (next_target_array - cur_pos_array) / np.linalg.norm(next_target_array - cur_pos_array)
 
 
         # compute the expect position
-        c = a + (distance_traveled * v)
+        istant_pos = cur_pos_array + (distance_traveled * speed_array)
 
-        return tuple(c)
+        return tuple(istant_pos)
 
     def compute_cross_point(self, hello_packet):
 
