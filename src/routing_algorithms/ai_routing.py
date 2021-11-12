@@ -5,7 +5,10 @@ DI DRONI CHE SONO INIZIALIZZATI LÀ
 
 import numpy as np
 import math
+from numpy.core.defchararray import array 
 from numpy.core.numeric import NaN
+from numpy.lib.type_check import real_if_close
+from src.routing_algorithms.georouting import GeoRouting
 from src.utilities import utilities as util
 from src.routing_algorithms.BASE_routing import BASE_routing
 from matplotlib import pyplot as plt
@@ -43,6 +46,8 @@ random.seed(2)
 #epsilon must be smaller and it represents probability for epsilon-greedy
 min_epsilon = 0
 max_epsilon = 0.5#0.50
+
+georouting_on_next_step = True
 
 #take a random value between 0,1
 epsilon = random.random()
@@ -114,7 +119,9 @@ class AIRouting(BASE_routing):
                 
             #add attempts for the starting drone that has initially the packet
             #TODO
-            #maybe also for all the path of packets to incentive them
+            #maybe also for all the path of packets to incentive themù
+
+            #Error with 10 drones
             n[drone.identifier] += 1
             
             #calculate incrementally the reward
@@ -128,7 +135,7 @@ class AIRouting(BASE_routing):
         
         #we take our distance from the depot
         best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-       
+        best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
@@ -198,8 +205,7 @@ class AIRouting(BASE_routing):
         #A GOOD POSSIBLE IDEA IS TO COMBINE THIS REINFORCEMENT LEARNING WITH GEOGRAPHICAL ROUTING
         
         #we take all hello packets and all istances of drones
-        for hello_packet, drone_istance in opt_neighbors:
-            
+        for hello_packet, drone_istance in opt_neighbors:            
             
            
             
@@ -317,8 +323,10 @@ class AIRouting(BASE_routing):
             """  
          #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
          #   exp_position = self.compute_cross_point(hello_packet)
-      #      exp_position = self.compute_extimed_position(hello_packet)
-        #    exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
+
+            exp_position = self.compute_extimed_position(hello_packet)
+          #  exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
+
             exp_distance = self.compute_distance_to_trajectory(hello_packet)
             
 
@@ -331,6 +339,7 @@ class AIRouting(BASE_routing):
                 
              #   continue
             
+
             if exp_distance < best_drone_distance_from_depot:
                 best_drone_distance_from_depot = exp_distance
                 best_drone = drone_istance
@@ -386,23 +395,40 @@ class AIRouting(BASE_routing):
         
         print("Hello", q,n)
         pass
+
     def compute_extimed_position(self, hello_packet):
-        # compute the difference in second beetween now and the hello_packet_time
-        dif_time = (self.simulator.cur_step - hello_packet.time_step_creation) * self.simulator.time_step_duration 
+        """ estimate the current position of the drone """
 
-        # calculete the distance traveled by drone in time dif_time
-        distance_traveled = dif_time * hello_packet.speed
+        # get known info about the neighbor drone
+        hello_message_time = hello_packet.time_step_creation
+        known_position = hello_packet.cur_pos
+        known_speed = hello_packet.speed
+        known_next_target = hello_packet.next_target
 
-        # compute the direction vector
-        cur_pos_array, next_target_array = np.asarray(hello_packet.cur_pos), np.asarray(hello_packet.next_target)
-        speed_array = (next_target_array - cur_pos_array) / np.linalg.norm(next_target_array - cur_pos_array)
+        # compute the time elapsed since the message sent and now
+        # elapsed_time in seconds = elapsed_time in steps * step_duration_in_seconds
+        elapsed_time = (self.simulator.cur_step - hello_message_time) * self.simulator.time_step_duration  # seconds
 
+        # distance traveled by drone
+        distance_traveled = elapsed_time * known_speed
+
+        # direction vector
+        a, b = np.asarray(known_position), np.asarray(known_next_target)
+        v_ = (b - a) / np.linalg.norm(b - a)
 
         # compute the expect position
-        istant_pos = cur_pos_array + (distance_traveled * speed_array)
+        c = a + (distance_traveled * v_)
 
-        return tuple(istant_pos)
+        return tuple(c)
 
+#Unused
+    def compute_next_position(self, hello_packet):
+        hello_packet_time = hello_packet.time_step_creation
+        hello_packet_position = hello_packet.cur_pos
+        hello_packet_speed = hello_packet.speed
+        hello_packet_next_target = hello_packet.next_target        
+   
+#Unused
     def compute_cross_point(self, hello_packet):
 
         exp_pos = self.compute_extimed_position(hello_packet)
@@ -414,143 +440,30 @@ class AIRouting(BASE_routing):
         a, b = np.asarray(exp_pos), np.asarray(hello_packet_next_target)
     #    v = (b - a) / np.linalg.norm(b - a)
 
-
-
-
         return self.myFunction(a, b, hello_packet_speed , -1)
 
-    def myFunction(self, start_point, end_point, speed, exMyTime):
+    def compute_distance_to_trajectory_s(self):
+        p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
+        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
+        print(type(self.drone))
+        p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
 
-        import math
-        mid_point = (start_point + end_point)/2
+        print(type(p2))
 
-        distance_traveled = util.euclidean_distance(start_point, mid_point)
-        time = distance_traveled/speed
-
-        mySpeed = self.drone.speed
-        myCoords = self.drone.coords
-        distance_todo = util.euclidean_distance(myCoords, mid_point)
-        isMovingAway = util.euclidean_distance(myCoords, start_point) < util.euclidean_distance(myCoords, end_point)
-        myTime = distance_todo/mySpeed
-        difTime = myTime - time
-        epsilon = 1
-
-        if myTime == exMyTime:
-            return mid_point
-
-        if math.isnan(myTime):
-            return mid_point
-
-        if abs(difTime) < epsilon:
-            return mid_point
-        elif start_point[0] == end_point[0] and start_point[1] == end_point[1]:
-
-            return start_point
-        elif isMovingAway:
-            return self.myFunction(start_point, mid_point, speed, myTime)
-        else:
-            return self.myFunction(mid_point, end_point, speed, myTime)
-        '''
-        elif difTime > 0:
-            print("sono lui")
-            return self.myFunction(start_point, mid_point, speed, myTime)
-        elif difTime < 0:
-            print("sono io ")
-            return self.myFunction(mid_point, end_point, speed, myTime)
-            '''
-
-        return mid_point
+        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
 
     def compute_distance_to_trajectory(self, hello_packet):
-        point_x = self.drone.coords[0]
-        point_y = self.drone.coords[1]
 
         exp_position = self.compute_extimed_position(hello_packet)
 
+        p1 = np.array([exp_position[0][0], exp_position[0][1]])
+        print(exp_position[0])
+        print(exp_position[1])
+        print(hello_packet.next_target[0])
+        print(self.drone.depot.coords[0])
+        p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
+        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
 
-        start_x = exp_position[0]
-        start_y = exp_position[1]
+        print(type(p2))
 
-        end_x = hello_packet.next_target[0]
-        end_y = hello_packet.next_target[1]
-
-        return self.pnt2line(self.drone.coords, exp_position, hello_packet.next_target)
-        return self.myDist(start_x, start_y, end_x, end_y, point_x, point_y)
-
-    def pnt2line(self, pnt, start, end):
-        line_vec = self.vector(start, end)
-        pnt_vec = self.vector(start, pnt)
-        line_len = self.length(line_vec)
-        line_unitvec = self.unit(line_vec)
-        pnt_vec_scaled = self.scale(pnt_vec, 1.0/line_len)
-        t = self.dot(line_unitvec, pnt_vec_scaled)    
-        if t < 0.0:
-            t = 0.0
-        elif t > 1.0:
-            t = 1.0
-        nearest = self.scale(line_vec, t)
-        dist = self.distance(nearest, pnt_vec)
-      #  nearest = add(nearest, start)
-        return dist
-
-
-    def myDist(self, x1, y1, x2, y2, x3, y3): # x3,y3 is the point
-        px = x2-x1
-        py = y2-y1
-
-        norm = px*px + py*py
-
-        u =  ((x3 - x1) * px + (y3 - y1) * py) / float(norm)
-
-        if u > 1:
-            u = 1
-        elif u < 0:
-            u = 0
-
-        x = x1 + u * px
-        y = y1 + u * py
-
-        dx = x - x3
-        dy = y - y3
-
-    # Note: If the actual distance does not matter,
-    # if you only want to compare what this function
-    # returns to other results of this function, you
-    # can just return the squared distance instead
-    # (i.e. remove the sqrt) to gain a little performance
-
-        dist = (dx*dx + dy*dy)**.5
-
-        return dist 
-
-
-    def dot(self, v,w):
-        x,y = v
-        X,Y = w
-        return x*X + y*Y
-
-    def length(self, v):
-        x,y = v
-        return math.sqrt(x*x + y*y)
-
-    def vector(self, b,e):
-        x,y = b
-        X,Y = e
-        return (X-x, Y-y)
-
-    def unit(self, v):
-        x,y = v
-        mag = self.length(v)
-        return (x/mag, y/mag)
-
-    def distance(self, p0,p1):
-        return self.length(self.vector(p0,p1))
-
-    def scale(self, v,sc):
-        x,y = v
-        return (x * sc, y * sc)
-
-    def add(self, v,w):
-        x,y = v
-        X,Y = w
-        return (x+X, y+Y)
+        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
