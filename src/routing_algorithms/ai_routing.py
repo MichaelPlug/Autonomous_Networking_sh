@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 
 
 #TO FIX TO OBTAIN THE NUMBER OF DRONES (COSTANT OF CONFIG.PY)
-import src.utilities.config as config
+import src.utilities.config as config #try self.simulator.n_drones
 
 #GLOBAL THINGS
 
@@ -28,15 +28,15 @@ q = {}
 #each element indicates attempts executed for each drone
 n = {}
 
+
+k = {}
+
 Reward = {}
 
 
 
 """##!!
-
-
 ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-
 #create dictionaries (because they are more indicated)
 for i in range(5):
     
@@ -45,10 +45,7 @@ for i in range(5):
     
     #initially we have zero attempts for each element
     n[i] = 0
-
-
 ##END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-
 """   
     
 #seed for random values, just to have consistence on values 
@@ -57,7 +54,7 @@ for i in range(5):
 random.seed(2)
 
 #epsilon must be smaller and it represents probability for epsilon-greedy
-min_epsilon = 0
+min_epsilon = 0.0
 max_epsilon = 0.5#0.50
 
 georouting_on_next_step = True
@@ -66,7 +63,7 @@ georouting_on_next_step = True
 epsilon = random.random()
 
 #normalize the random value from min_epsilon to max_epsilon
-epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
+#epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
 #list of yet taken feedback
 yet_happened = []
@@ -205,16 +202,15 @@ class AIRouting(BASE_routing):
                 drone_iden = drone
             
             try:
-                
                 n[(drone_iden.identifier,drone_iden.next_target())] += 1
                 q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
-                
+  
             except Exception as e:
-                
                 n[(drone_iden.identifier,drone_iden.next_target())] = 1
                 q[(drone_iden.identifier,drone_iden.next_target())] = 0
-                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
-            
+
+
+
             
             
             
@@ -330,7 +326,15 @@ class AIRouting(BASE_routing):
     
     
         #with 1 - epsilon probability we choose the greedy approach
-        if (rand < (1-epsilon)):
+        import math
+       # newEps =  min_epsilon + (math.tanh(n[self.drone.identifier, self.drone.next_target]/5) * (max_epsilon - min_epsilon)) 
+        try:
+            count = n[self.drone.identifier, self.drone.next_target()]
+        except:
+            count = 0
+        newEps =  min_epsilon + (math.tanh(count/5) * (max_epsilon - min_epsilon)) 
+
+        if (rand < (newEps)):
             
             
             
@@ -420,7 +424,7 @@ class AIRouting(BASE_routing):
             
         
         Reward[pkd.identifier] = max_action
-        
+
         #return this random drone
         return max_action
         
@@ -582,6 +586,7 @@ class AIRouting(BASE_routing):
         
         print("Hello", q)
         print("Alo", n)
+        print("Salut", k)
         pass
 
     def compute_extimed_position(self, hello_packet):
@@ -633,10 +638,7 @@ class AIRouting(BASE_routing):
     def compute_distance_to_trajectory_s(self):
         p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-        print(type(self.drone))
         p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
-
-        print(type(p2))
 
         return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
 
@@ -646,13 +648,7 @@ class AIRouting(BASE_routing):
 
         #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
         p1 = np.array([exp_position[0], exp_position[1]])
-        print(exp_position[0])
-        print(exp_position[1])
-        print(hello_packet.next_target[0])
-        print(self.drone.depot.coords[0])
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-
-        print(type(p2))
 
         return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
