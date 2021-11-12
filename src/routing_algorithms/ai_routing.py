@@ -31,6 +31,8 @@ n = {}
 
 k = {}
 
+p = []
+
 Reward = {}
 
 
@@ -325,19 +327,11 @@ class AIRouting(BASE_routing):
     
     
     
-        #with 1 - epsilon probability we choose the greedy approach
-        import math
-       # newEps =  min_epsilon + (math.tanh(n[self.drone.identifier, self.drone.next_target]/5) * (max_epsilon - min_epsilon)) 
-        try:
-            count = n[self.drone.identifier, self.drone.next_target()]
-        except:
-            count = 0
-        newEps =  min_epsilon + (math.tanh(count/5) * (max_epsilon - min_epsilon)) 
 
-        if (rand < (newEps)):
-            
-            
-            
+
+        a = True
+        if a:
+     #   if (rand < (1-newEps)):
             
             try:
             
@@ -351,10 +345,11 @@ class AIRouting(BASE_routing):
                 max_q = q[(self.drone.identifier,self.drone.next_target())]
             
             
-            
             #initially the packet remains with us
             max_action = None
             
+            k = 0
+            tot_n = 0
             #loop for every neighbors
             for hello_packet, drone_istance in opt_neighbors:
                 
@@ -383,10 +378,25 @@ class AIRouting(BASE_routing):
                     
                         #select it
                         max_action = drone_istance
+
+                k += 1
+                try:
+                    tot_n += n[(drone_istance.identifier,hello_packet.next_target)] 
+                except Exception as e:
+                    continue
+
+            
             
         #with epsilon probability we choose the random approach
-        else:
-            
+
+                #with 1 - epsilon probability we choose the greedy approach
+        import math
+       # newEps =  min_epsilon + (math.tanh(n[self.drone.identifier, self.drone.next_target]/5) * (max_epsilon - min_epsilon)) 
+
+     #   newEps = min_epsilon + ((1- math.tanh(tot_n/(k*1.75))) * (max_epsilon - min_epsilon)) 
+        newEps =  min_epsilon + (math.exp(-1*tot_n/(k*1.75)) * (max_epsilon - min_epsilon)) 
+
+        if rand > 1- newEps:
             
             max_action = None
             
@@ -650,5 +660,5 @@ class AIRouting(BASE_routing):
         p1 = np.array([exp_position[0], exp_position[1]])
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-
+   
         return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
