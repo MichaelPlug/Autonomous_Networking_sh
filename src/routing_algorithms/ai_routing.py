@@ -23,27 +23,32 @@ import src.utilities.config as config
 import random
 
 #each element indicates scores calculated for each drone
-q = []
+q = {}
 
 #each element indicates attempts executed for each drone
-n = []
+n = {}
 
-""" ##!!
+Reward = {}
 
 
-FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY"""
 
-#create lists
-for _ in range(5):
+"""##!!
+
+
+##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
+
+#create dictionaries (because they are more indicated)
+for i in range(5):
     
     #we assume to have optimistic initial value as strategy for action selection
-    q.append(2)
+    q[i] = 2
     
     #initially we have zero attempts for each element
-    n.append(0)
+    n[i] = 0
 
-"""END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-    
+
+##END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
+
 """   
     
 #seed for random values, just to have consistence on values 
@@ -86,12 +91,13 @@ class AIRouting(BASE_routing):
         # outcome == -1 if the packet/event expired; 0 if the packets has been delivered to the depot
         # Feedback from a delivered or expired packet
         print(self.drone.identifier, "----------", drone, id_event, delay, outcome)
-
+      
         # Be aware, due to network errors we can give the same event to multiple drones and receive multiple feedback for the same packet!!
         # NOTE: reward or update using the old action!!
         # STORE WHICH ACTION DID YOU TAKE IN THE PAST.
         # do something or train the model (?)
         
+       
         
         #if the packet isn't still treated, then we train system for it
         if (id_event not in yet_happened):
@@ -111,6 +117,8 @@ class AIRouting(BASE_routing):
                 #we obtain a small reward 
                 R = 0.5
             
+                #R = -2
+            
             #if the packet arrived
             else:
                           
@@ -125,16 +133,21 @@ class AIRouting(BASE_routing):
                 #take the reward
                 R = 1 + temp 
                 
+                #R = 2 * (1 - delay/self.simulator.event_duration)
+                
             #add attempts for the starting drone that has initially the packet
             #TODO
             #maybe also for all the path of packets to incentive themù
 
             #Error with 10 drones
+            
+            
+            """##!!
+            
+            ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
+            
             n[drone.identifier] += 1
             
-             ##!!
-            
-            ##!!FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
             
             #calculate incrementally the reward
             q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
@@ -145,17 +158,67 @@ class AIRouting(BASE_routing):
             
             """
             
+            """##!!
+            
+            #METHOD THAT ASSIGN THE REWARD TO THE FIRST INITIAL DRONE
+            
             try:
-                cc
-                q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier]))
+                
+                n[(drone.identifier,drone.next_target())] += 1
+                q[(drone.identifier,drone.next_target())] = q[(drone.identifier,drone.next_target())] + ((1/(n[(drone.identifier,drone.next_target())]))*(R - q[(drone.identifier,drone.next_target())]))
                 
             except Exception as e:
                 
-                print(e)
-                print("alo")
-                input()
+                n[(drone.identifier,drone.next_target())] = 1
+                q[(drone.identifier,drone.next_target())] = 0
+                q[(drone.identifier,drone.next_target())] = q[(drone.identifier,drone.next_target())] + ((1/(n[(drone.identifier,drone.next_target())]))*(R - q[(drone.identifier,drone.next_target())]))
+                
+            #END OF THE METHOD THAT ASSIGN THE REWARD TO THE FIRST INITIAL DRONE
             
             """
+            
+            
+            """##!!
+            
+            #METHOD THAT ASSIGN THE REWARD ONLY AT THE LAST DRONE
+            try:
+                
+                n[(self.drone.identifier,self.drone.next_target())] += 1
+                q[(self.drone.identifier,self.drone.next_target())] = q[(self.drone.identifier,self.drone.next_target())] + ((1/(n[(self.drone.identifier,self.drone.next_target())]))*(R - q[(self.drone.identifier,self.drone.next_target())]))
+                
+            except Exception as e:
+                
+                n[(self.drone.identifier,self.drone.next_target())] = 1
+                q[(self.drone.identifier,self.drone.next_target())] = 0
+                q[(self.drone.identifier,self.drone.next_target())] = q[(self.drone.identifier,self.drone.next_target())] + ((1/(n[(self.drone.identifier,self.drone.next_target())]))*(R - q[(self.drone.identifier,self.drone.next_target())]))
+            
+            #END OF THE METHOD THAT ASSIGN THE REWARD ONLY AT THE LAST DRONE
+            
+            """
+            print(delay)
+            
+            try:
+                drone_iden = Reward[id_event]
+                
+            except Exception as e:
+                
+                drone_iden = drone
+            
+            try:
+                
+                n[(drone_iden.identifier,drone_iden.next_target())] += 1
+                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+                
+            except Exception as e:
+                
+                n[(drone_iden.identifier,drone_iden.next_target())] = 1
+                q[(drone_iden.identifier,drone_iden.next_target())] = 0
+                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+            
+            
+            
+            
+            
             
     def relay_selection(self, opt_neighbors, pkd):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
@@ -169,6 +232,211 @@ class AIRouting(BASE_routing):
         #packet without any help)
         best_drone = None
         
+       
+        
+        
+        
+        #generate a random value between 0 and 1
+        rand = random.random()
+        
+        
+        
+        """##!!
+        
+        #GEOROUTING EPSILON-GREEDY NORMALE-CASUALE
+        
+        
+        
+        #with 1 - epsilon probability we choose the greedy approach
+        if (rand < (1-epsilon)):
+            
+            
+            
+            
+            try:
+            
+                #take the maximum value of q
+                max_q = q[(self.drone.identifier,self.drone.next_target())]
+            
+            except Exception as e:
+                
+                q[(self.drone.identifier,self.drone.next_target())] = 0
+                
+                max_q = q[(self.drone.identifier,self.drone.next_target())]
+            
+            
+            
+            #initially the packet remains with us
+            max_action = None
+            
+            #loop for every neighbors
+            for hello_packet, drone_istance in opt_neighbors:
+                
+                
+                try:                
+                
+                    #if we have a more reliable node
+                    if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
+                    
+                        #select its best value for q function
+                        max_q = q[(drone_istance.identifier,hello_packet.next_target)]
+                    
+                        #select it
+                        max_action = drone_istance
+                
+                
+                except Exception as e:
+                    
+                    q[(drone_istance.identifier,hello_packet.next_target)] = 0
+                    
+                    #if we have a more reliable node
+                    if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
+                    
+                        #select its best value for q function
+                        max_q = q[(drone_istance.identifier,hello_packet.next_target)]
+                    
+                        #select it
+                        max_action = drone_istance
+            
+        #with epsilon probability we choose the random approach
+        else:
+            
+            
+            
+            
+            #create the list of neighbors
+            list_neighbors = []
+            
+            #loop for every drones
+            for hello_packet, drone_istance in opt_neighbors:
+                
+                #append istances of the drones
+                list_neighbors.append(drone_istance)
+                
+            #select one drone randomly
+            max_action = random.choice(list_neighbors)
+            
+        
+        Reward[pkd.identifier] = max_action
+        
+        #return this random drone
+        return max_action
+        
+        
+        #FINE GEOROUTING EPSILON-GREEDY NORMALE-CASUALE
+    
+        """    
+    
+    
+    
+        #with 1 - epsilon probability we choose the greedy approach
+        if (rand < (1-epsilon)):
+            
+            
+            
+            
+            try:
+            
+                #take the maximum value of q
+                max_q = q[(self.drone.identifier,self.drone.next_target())]
+            
+            except Exception as e:
+                
+                q[(self.drone.identifier,self.drone.next_target())] = 0
+                
+                max_q = q[(self.drone.identifier,self.drone.next_target())]
+            
+            
+            
+            #initially the packet remains with us
+            max_action = None
+            
+            #loop for every neighbors
+            for hello_packet, drone_istance in opt_neighbors:
+                
+                
+                try:                
+                
+                    #if we have a more reliable node
+                    if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
+                    
+                        #select its best value for q function
+                        max_q = q[(drone_istance.identifier,hello_packet.next_target)]
+                    
+                        #select it
+                        max_action = drone_istance
+                
+                
+                except Exception as e:
+                    
+                    q[(drone_istance.identifier,hello_packet.next_target)] = 0
+                    
+                    #if we have a more reliable node
+                    if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
+                    
+                        #select its best value for q function
+                        max_q = q[(drone_istance.identifier,hello_packet.next_target)]
+                    
+                        #select it
+                        max_action = drone_istance
+            
+        #with epsilon probability we choose the random approach
+        else:
+            
+            
+            max_action = None
+            
+            #loop for every neighbors
+            for hello_packet, drone_istance in opt_neighbors:
+            
+            #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
+            #   exp_position = self.compute_cross_point(hello_packet)
+
+               exp_position = self.compute_extimed_position(hello_packet)
+             #  exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
+
+               exp_distance = self.compute_distance_to_trajectory(hello_packet)
+               
+
+               
+              # time_taken = exp_distance / hello_packet.speed
+               
+               
+               
+               #if (angle < 180 and angle_drone > 180):
+                   
+                #   continue
+               
+
+               if exp_distance < best_drone_distance_from_depot:
+                   best_drone_distance_from_depot = exp_distance
+                   max_action = drone_istance
+                 #  time_taken_best = best_drone_distance_from_depot / hello_packet.speed
+                   
+            
+            
+            
+           
+            
+        
+        Reward[pkd.identifier] = max_action
+        
+        #return this random drone
+        return max_action
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+   
         
         """ ##!!
         
@@ -186,15 +454,24 @@ class AIRouting(BASE_routing):
         
         """
         
-        '''
+        """##!!
+        
+        FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
+        
         #generate a random value between 0 and 1
         rand = random.random()
         
         #with 1 - epsilon probability we choose the greedy approach
         if (rand < (1-epsilon)):
             
+            
+            
+            
             #take the maximum value of q
             max_q = q[self.drone.identifier]
+            
+            
+            
             
             #initially the packet remains with us
             max_action = None
@@ -227,9 +504,14 @@ class AIRouting(BASE_routing):
             #select one drone randomly
             max_action = random.choice(list_neighbors)
             
+            
         #return this random drone
-        #return max_action
-         '''               
+        return max_action
+    
+        FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY        
+        
+        """
+                      
         
         #HERE BEGIN THE GEOGRAPHICAL ROUTING, BUT WE DON'T ARRIVE UNTIL HERE
         #TODO
@@ -298,7 +580,8 @@ class AIRouting(BASE_routing):
                 metrics about the learning process
         """
         
-        print("Hello", q,n)
+        print("Hello", q)
+        print("Alo", n)
         pass
 
     def compute_extimed_position(self, hello_packet):
