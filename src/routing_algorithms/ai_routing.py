@@ -28,6 +28,11 @@ q = []
 #each element indicates attempts executed for each drone
 n = []
 
+""" ##!!
+
+
+FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY"""
+
 #create lists
 for _ in range(5):
     
@@ -36,7 +41,10 @@ for _ in range(5):
     
     #initially we have zero attempts for each element
     n.append(0)
+
+"""END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
     
+"""   
     
 #seed for random values, just to have consistence on values 
 #TODO
@@ -124,9 +132,30 @@ class AIRouting(BASE_routing):
             #Error with 10 drones
             n[drone.identifier] += 1
             
+             ##!!
+            
+            ##!!FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
+            
             #calculate incrementally the reward
             q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
+            
+            ##!!END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
+            
              
+            
+            """
+            
+            try:
+                
+                q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier]))
+                
+            except Exception as e:
+                
+                print(e)
+                print("alo")
+                input()
+            
+            """
             
     def relay_selection(self, opt_neighbors, pkd):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
@@ -141,7 +170,8 @@ class AIRouting(BASE_routing):
         best_drone = None
         
         
-        """
+        """ ##!!
+        
         "REINFORCEMENT LEARNING RANDOM"
         max_action = None
         list_neightbours = []
@@ -153,6 +183,7 @@ class AIRouting(BASE_routing):
         
         return max_action
         "END REINFORCEMENT LEARNING RANDOM"
+        
         """
         
         '''
@@ -206,121 +237,14 @@ class AIRouting(BASE_routing):
         
         #we take all hello packets and all istances of drones
         for hello_packet, drone_istance in opt_neighbors:            
-            
-           
-            
-            
-            """
-            
-                we take the current position, the direction and the speed
-                to estimate next position
-            
-            """
-            
-            """
-            print((drone_istance))
-            
-            print(hello_packet.next_target)
-            
-            print(hello_packet.cur_pos, hello_packet.cur_pos[0])
-            
-            
-            x1 = hello_packet.cur_pos[0]            
-            
-            y1 = hello_packet.cur_pos[1]
-            
-            x2 = hello_packet.next_target[0]
-            
-            y2 = hello_packet.next_target[1]
-            
-            m = (y2 - y1) / (x2 - x1)
-            
-            x_new = x1 + (1 / (np.sqrt(1 + (m*m) ) ) )*0.5
-            
-            y_new = y1 + (m / (np.sqrt(1 + (m*m) ) ) )*0.5
         
-                
-            print("alo", x_new, y_new)
-        
-            
-            """
-            """
-            
-            d_old = util.euclidean_distance(self.simulator.depot.coords, d)
-            
-            d_new = util.euclidean_distance(self.simulator.depot.coords, hello_packet.next_target)
-            
-            
-            
-            exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
-            exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
-            """
             
             import math
             
-            final = hello_packet.next_target
-            
-            coords = hello_packet.cur_pos
-            
-            ang = math.atan2(final[1]-coords[1], final[0]-coords[0])
-            
-            angle = math.degrees(ang)
-            
-            if (angle < 0):
-                
-                angle = 360 + angle
             
             
             
-            old_x, old_y = coords[0], coords[1]
-            angle = float(angle)
-            # Compute the change in position
-            
-            """
-            
-            speed = hello_packet.speed
-            delta_y = speed * math.cos(math.radians(angle))
-            delta_x = speed * math.sin(math.radians(angle))
-            # Add that to the existing position
-            new_x = old_x + delta_x 
-            new_y = old_y + delta_y 
-            """
-            
-            final_drone = self.drone.next_target()
-            
-            coords_drone = self.drone.coords
-            
-            ang_drone = math.atan2(final_drone[1]-coords_drone[1], final_drone[0]-coords_drone[0])
-            
-            angle_drone = math.degrees(ang_drone)
-            
-            if (angle_drone < 0):
-                
-                angle_drone = 360 + angle_drone
-            
-            
-            
-            angle_drone = float(angle_drone)
-            
-            
-            """
-            if (angle > 180):
-                print("who am i:", self.drone)
-                print("\tmine cur_pos:", self.drone.coords)
-                print("\t mine Next:", self.drone.next_target())
-                
-                print("\t mine angle: ", angle_drone)
-                print("i have this neighbour: ", drone_istance)
-                print("with this characteristics\n\t Cur_pos: ", hello_packet.cur_pos)
-                print("\t Next:", hello_packet.next_target)
-                
-                print("\t angle: ", angle)
-                #print(new_x, new_y)
-                
-                #if ()
-                
-                "input()"
-            """  
+           
          #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
          #   exp_position = self.compute_cross_point(hello_packet)
 
@@ -345,25 +269,6 @@ class AIRouting(BASE_routing):
                 best_drone = drone_istance
               #  time_taken_best = best_drone_distance_from_depot / hello_packet.speed
                 
-            
-            """
-            elif (best_drone != None and exp_distance >= best_drone_distance_from_depot and best_drone.next_target() == hello_packet.next_target):
-                
-                if (time_taken < time_taken_best):
-                    
-                    best_drone_distance_from_depot = exp_distance
-                    best_drone = drone_istance
-                    time_taken_best = best_drone_distance_from_depot / hello_packet.speed
-            
-            """
-
-            
-            """
-            if exp_distance < best_drone_distance_from_depot or hello_packet.speed > self.drone.speed:
-                best_drone_distance_from_depot = exp_distance
-                best_drone = drone_istance
-            
-            """
 
 
      
@@ -456,7 +361,8 @@ class AIRouting(BASE_routing):
 
         exp_position = self.compute_extimed_position(hello_packet)
 
-        p1 = np.array([exp_position[0][0], exp_position[0][1]])
+        #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
+        p1 = np.array([exp_position[0], exp_position[1]])
         print(exp_position[0])
         print(exp_position[1])
         print(hello_packet.next_target[0])
