@@ -146,7 +146,7 @@ class AIRouting(BASE_routing):
             """
             
             try:
-                
+                cc
                 q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier]))
                 
             except Exception as e:
