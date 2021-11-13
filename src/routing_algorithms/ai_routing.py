@@ -238,6 +238,65 @@ class AIRouting(BASE_routing):
         rand = random.random()
         
         
+        """
+        
+        ##!! INIZIO UCB
+        
+        import math
+        
+        c = 2
+        
+        
+        
+        
+        try:
+        
+            #take the maximum value of q
+            max_temp = q[self.drone.identifier, self.drone.next_target()] + c* math.sqrt(math.log(config.SIM_DURATION) / self.simulator.cur_step)
+            
+        
+        except Exception as e:
+            
+            q[(self.drone.identifier,self.drone.next_target())] = 0
+            
+            max_temp = q[self.drone.identifier, self.drone.next_target()] + c* math.sqrt(math.log(config.SIM_DURATION) / self.simulator.cur_step)
+            
+    
+        max_action = None
+        
+        for hello_packet, drone_istance in opt_neighbors:
+            
+            
+            
+            try:                
+            
+                
+                temp = q[drone_istance.identifier, hello_packet.next_target] + c* math.sqrt(math.log(30000) / self.simulator.cur_step)
+            
+            
+            
+            except Exception as e:
+                
+                q[(drone_istance.identifier,hello_packet.next_target)] = 0
+                
+                
+                temp = q[drone_istance.identifier, hello_packet.next_target] + c* math.sqrt(math.log(30000) / self.simulator.cur_step)
+            
+            
+        
+        
+            if (temp > max_temp):
+                
+                max_temp = q[drone_istance.identifier, hello_packet.next_target] + c* math.sqrt(math.log(30000) / self.simulator.cur_step)
+                
+                max_action = drone_istance
+    
+
+        return max_action                
+            
+        " FINE UCB "
+        
+        """
         
         """##!!
         
