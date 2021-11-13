@@ -408,8 +408,11 @@ class AIRouting(BASE_routing):
             #initially the packet remains with us
             max_action = None
             
-            k = 0
-            tot_n = 0
+            k = 1
+            try:
+                tot_n = n[(self.drone.identifier,self.drone.next_target())]
+            except:
+                tot_n = 0
 
             #loop for every neighbors
             for hello_packet, drone_istance in opt_neighbors:
