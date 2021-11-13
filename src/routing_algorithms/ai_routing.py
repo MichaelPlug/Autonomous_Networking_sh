@@ -472,21 +472,21 @@ class AIRouting(BASE_routing):
             # newEps = min_epsilon + ((1-math.tanh(tot_n/k*2))) * (max_epsilon - min_epsilon)
           #  newEps =  min_epsilon + (math.exp(-1*(tot_n)/(k)) * (max_epsilon - min_epsilon)) 
          #   newEps = min_epsilon + 
-        #    newEps = min_epsilon + ((tot_n)/(tot_n+k) *(max_epsilon - min_epsilon))
-            newEps = -k / (k - tot_n)
+            newEps = min_epsilon + ((tot_n)/(tot_n+k) *(max_epsilon - min_epsilon))
+     #       newEps = k / (k - tot_n)
         except:
             newEps = min_epsilon
 
 #        newEps = min_epsilon
-
+        print(newEps)
         c[(newEps)] = (tot_n, k)
-        #newEps = min_epsilon
+      #  newEps = min_epsilon
 #        except:
        # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))
         #newEps = max_epsilon
  #       newEps =  min_epsilon + (math.exp(-1*(tot_n**2)/(k**4)) * (max_epsilon - min_epsilon)) 
 
-        if rand < epsilon:
+        if rand < min_epsilon:
             
             max_action = None
             
