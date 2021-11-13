@@ -56,8 +56,9 @@ for i in range(5):
 random.seed(2)
 
 #epsilon must be smaller and it represents probability for epsilon-greedy
-min_epsilon = 0.1
-max_epsilon = 0.8#0.50
+second_epsilon = 0.05
+min_epsilon = 0.05
+max_epsilon = 0.25  
 
 georouting_on_next_step = True
 
@@ -113,11 +114,9 @@ class AIRouting(BASE_routing):
             #if the packet is arrived isn't more valid
             if (outcome == -1):
                 
-                
-                ####
                 #we obtain a small reward 
-                R = 0.5
-                ####
+                R = -1
+            
                 #R = -2
             
             #if the packet arrived
@@ -130,9 +129,10 @@ class AIRouting(BASE_routing):
                 #more the delay and value more close value to 1... 
                 #less the delay and value more close to 2 
                 temp = (temp - 0) / (2000 - 0)
-                
                 #take the reward
                 R = 1 + temp 
+                print("ciao")
+                print(R)
                 
                 #R = 2 * (1 - delay/self.simulator.event_duration)
                 
@@ -208,16 +208,12 @@ class AIRouting(BASE_routing):
             try:
                 n[(drone_iden.identifier,drone_iden.next_target())] += 1
                 q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
-  
             except Exception as e:
                 n[(drone_iden.identifier,drone_iden.next_target())] = 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = 0
-                
-                ####
-                
-                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
-  
-                ####
+                q[(drone_iden.identifier,drone_iden.next_target())] = R #0
+
+
+
             
             
             
@@ -242,8 +238,7 @@ class AIRouting(BASE_routing):
         #generate a random value between 0 and 1
         rand = random.random()
         
-        
-        """
+         """
         
         ##!! INIZIO UCB
         
@@ -296,12 +291,12 @@ class AIRouting(BASE_routing):
                 
                 max_action = drone_istance
     
-
         return max_action                
             
         " FINE UCB "
         
         """
+        
         
         """##!!
         
@@ -474,24 +469,28 @@ class AIRouting(BASE_routing):
        # newEps =  min_epsilon + (math.tanh(n[self.drone.identifier, self.drone.next_target]/5) * (max_epsilon - min_epsilon)) 
     
         try:
-            # newEps = min_epsilon + ((1-math.tanh(tot_n/k*2))) * (max_epsilon - min_epsilon)
-          #  newEps =  min_epsilon + (math.exp(-1*(tot_n)/(k)) * (max_epsilon - min_epsilon)) 
+         #    newEps = min_epsilon + ((1-math.tanh(tot_n/k))) * (max_epsilon - min_epsilon)
+           # newEps =  min_epsilon + (math.exp(-1*(tot_n)/(k)) * (max_epsilon - min_epsilon)) 
          #   newEps = min_epsilon + 
-            newEps = min_epsilon + ((tot_n)/(tot_n+k) *(max_epsilon - min_epsilon))
-     #       newEps = k / (k - tot_n)
+            newEps = min_epsilon + ((1-(tot_n)/((tot_n)+k)) *(max_epsilon - min_epsilon))
+       #     newEps = min_epsilon + (k /(k - tot_n)) *(max_epsilon - min_epsilon)
         except:
             newEps = min_epsilon
 
+
 #        newEps = min_epsilon
-        print(newEps)
-        c[(newEps)] = (tot_n, k)
-      #  newEps = min_epsilon
+  #      print(newEps)
+        try:
+            c[(newEps)] += 1
+        except: 
+            c[(newEps)] = 1
+      #  newEps = max_epsilon
 #        except:
        # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))
         #newEps = max_epsilon
  #       newEps =  min_epsilon + (math.exp(-1*(tot_n**2)/(k**4)) * (max_epsilon - min_epsilon)) 
 
-        if rand < min_epsilon:
+        if rand < newEps:
             
             max_action = None
             
@@ -528,7 +527,6 @@ class AIRouting(BASE_routing):
             
         
         Reward[pkd.identifier] = max_action
-
         #return this random drone
         return max_action
         
@@ -691,6 +689,7 @@ class AIRouting(BASE_routing):
         print("Hello", q)
         print("Alo", n)
         print("Salut", c)
+        print(epsilon)
         pass
 
     def compute_extimed_position(self, hello_packet):
