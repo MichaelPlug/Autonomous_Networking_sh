@@ -3,6 +3,7 @@ PER CHI LEGGERÀ: NON SO COME IMPORTARE DA SRC.UTILITIES.CONFIG IL NUMERO
 DI DRONI CHE SONO INIZIALIZZATI LÀ
 """
 
+from operator import ne
 import numpy as np
 import math
 from numpy.core.defchararray import array 
@@ -29,9 +30,8 @@ q = {}
 n = {}
 
 
-k = {}
-
-p = []
+c = {}
+c2 = {}
 
 Reward = {}
 
@@ -56,8 +56,8 @@ for i in range(5):
 random.seed(2)
 
 #epsilon must be smaller and it represents probability for epsilon-greedy
-min_epsilon = 0.0
-max_epsilon = 0.5#0.50
+min_epsilon = 0.1
+max_epsilon = 0.8#0.50
 
 georouting_on_next_step = True
 
@@ -65,7 +65,7 @@ georouting_on_next_step = True
 epsilon = random.random()
 
 #normalize the random value from min_epsilon to max_epsilon
-#epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
+epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
 #list of yet taken feedback
 yet_happened = []
@@ -114,7 +114,7 @@ class AIRouting(BASE_routing):
             if (outcome == -1):
                 
                 #we obtain a small reward 
-                R = 0.5
+                sR = 0.5
             
                 #R = -2
             
@@ -325,7 +325,8 @@ class AIRouting(BASE_routing):
     
         """    
     
-    
+
+        q_distance = best_drone_distance_from_depot
     
 
 
@@ -344,32 +345,45 @@ class AIRouting(BASE_routing):
                 
                 max_q = q[(self.drone.identifier,self.drone.next_target())]
             
-            
+
             #initially the packet remains with us
             max_action = None
             
             k = 0
             tot_n = 0
+
             #loop for every neighbors
             for hello_packet, drone_istance in opt_neighbors:
                 
                 
+
                 try:                
                 
+                    if (q[(drone_istance.identifier,hello_packet.next_target)] == max_q):
+                        temp_dist = self.compute_distance_to_trajectory(hello_packet)
+                        if temp_dist < q_distance:
+                            q_distance = temp_dist
+                            max_action = drone_istance
+
+
                     #if we have a more reliable node
                     if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
-                    
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
                     
                         #select it
                         max_action = drone_istance
-                
-                
+                        
                 except Exception as e:
                     
                     q[(drone_istance.identifier,hello_packet.next_target)] = 0
-                    
+
+                    if (q[(drone_istance.identifier,hello_packet.next_target)] == max_q):
+                        temp_dist = self.compute_distance_to_trajectory(hello_packet)
+                        if temp_dist < q_distance:
+                            q_distance = temp_dist
+                            max_action = drone_istance
+
                     #if we have a more reliable node
                     if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
                     
@@ -378,6 +392,8 @@ class AIRouting(BASE_routing):
                     
                         #select it
                         max_action = drone_istance
+
+
 
                 k += 1
                 try:
@@ -392,11 +408,26 @@ class AIRouting(BASE_routing):
                 #with 1 - epsilon probability we choose the greedy approach
         import math
        # newEps =  min_epsilon + (math.tanh(n[self.drone.identifier, self.drone.next_target]/5) * (max_epsilon - min_epsilon)) 
+    
+        try:
+            # newEps = min_epsilon + ((1-math.tanh(tot_n/k*2))) * (max_epsilon - min_epsilon)
+          #  newEps =  min_epsilon + (math.exp(-1*(tot_n)/(k)) * (max_epsilon - min_epsilon)) 
+         #   newEps = min_epsilon + 
+        #    newEps = min_epsilon + ((tot_n)/(tot_n+k) *(max_epsilon - min_epsilon))
+            newEps = -k / (k - tot_n)
+        except:
+            newEps = min_epsilon
 
-     #   newEps = min_epsilon + ((1- math.tanh(tot_n/(k*1.75))) * (max_epsilon - min_epsilon)) 
-        newEps =  min_epsilon + (math.exp(-1*tot_n/(k*1.75)) * (max_epsilon - min_epsilon)) 
+#        newEps = min_epsilon
 
-        if rand > 1- newEps:
+        c[(newEps)] = (tot_n, k)
+        #newEps = min_epsilon
+#        except:
+       # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))
+        #newEps = max_epsilon
+ #       newEps =  min_epsilon + (math.exp(-1*(tot_n**2)/(k**4)) * (max_epsilon - min_epsilon)) 
+
+        if rand < epsilon:
             
             max_action = None
             
@@ -427,8 +458,7 @@ class AIRouting(BASE_routing):
                    max_action = drone_istance
                  #  time_taken_best = best_drone_distance_from_depot / hello_packet.speed
                    
-            
-            
+
             
            
             
@@ -596,7 +626,7 @@ class AIRouting(BASE_routing):
         
         print("Hello", q)
         print("Alo", n)
-        print("Salut", k)
+        print("Salut", c)
         pass
 
     def compute_extimed_position(self, hello_packet):
