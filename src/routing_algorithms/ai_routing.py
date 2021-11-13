@@ -113,9 +113,11 @@ class AIRouting(BASE_routing):
             #if the packet is arrived isn't more valid
             if (outcome == -1):
                 
+                
+                ####
                 #we obtain a small reward 
-                sR = 0.5
-            
+                R = 0.5
+                ####
                 #R = -2
             
             #if the packet arrived
@@ -210,9 +212,12 @@ class AIRouting(BASE_routing):
             except Exception as e:
                 n[(drone_iden.identifier,drone_iden.next_target())] = 1
                 q[(drone_iden.identifier,drone_iden.next_target())] = 0
-
-
-
+                
+                ####
+                
+                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+  
+                ####
             
             
             
