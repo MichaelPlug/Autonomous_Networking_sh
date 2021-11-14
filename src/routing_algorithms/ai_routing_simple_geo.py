@@ -229,7 +229,7 @@ class AIRouting(BASE_routing):
         
         #we take our distance from the depot
         best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-        best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
+       # best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
@@ -429,7 +429,7 @@ class AIRouting(BASE_routing):
                 try:                
                 
                     if (q[(drone_istance.identifier,hello_packet.next_target)] == max_q):
-                        temp_dist = self.compute_distance_to_trajectory(hello_packet)
+                        temp_dist = util.euclidean_distance(self.simulator.depot.coords, hello_packet.cur_pos)
                         if temp_dist < q_distance:
                             q_distance = temp_dist
                             max_action = drone_istance
@@ -439,7 +439,7 @@ class AIRouting(BASE_routing):
                     if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    
+                        q_distance = util.euclidean_distance(self.simulator.depot.coords, hello_packet.cur_pos)
                         #select it
                         max_action = drone_istance
                         
@@ -448,7 +448,7 @@ class AIRouting(BASE_routing):
                     q[(drone_istance.identifier,hello_packet.next_target)] = 0
 
                     if (q[(drone_istance.identifier,hello_packet.next_target)] == max_q):
-                        temp_dist = self.compute_distance_to_trajectory(hello_packet)
+                        temp_dist = util.euclidean_distance(self.simulator.depot.coords, hello_packet.cur_pos)
                         if temp_dist < q_distance:
                             q_distance = temp_dist
                             max_action = drone_istance
@@ -458,7 +458,8 @@ class AIRouting(BASE_routing):
                     
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    
+                   	q_distance = util.euclidean_distance(self.simulator.depot.coords, hello_packet.cur_pos)
+
                         #select it
                         max_action = drone_istance
 
@@ -510,10 +511,10 @@ class AIRouting(BASE_routing):
             #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
             #   exp_position = self.compute_cross_point(hello_packet)
 
-               exp_position = self.compute_extimed_position(hello_packet)
-             #  exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
+               #exp_position = self.compute_extimed_position(hello_packet)
+               exp_distance = util.euclidean_distance(hello_packet.cur_pos, self.simulator.depot.coords)
 
-               exp_distance = self.compute_distance_to_trajectory(hello_packet)
+             #  exp_distance = self.compute_distance_to_trajectory(hello_packet)
                
 
                
@@ -696,13 +697,10 @@ class AIRouting(BASE_routing):
                 metrics about the learning process
         """
         
-        """
         print("Hello", q)
         print("Alo", n)
         print("Salut", c)
         print(epsilon)
-        """
-        
         pass
 
     def compute_extimed_position(self, hello_packet):
