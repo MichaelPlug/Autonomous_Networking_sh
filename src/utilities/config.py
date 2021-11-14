@@ -4,6 +4,17 @@ from src.routing_algorithms.random_routing import RandomRouting
 from src.routing_algorithms.closeset_to_me_routing import CloRouting
 from src.routing_algorithms.ai_routing import AIRouting
 
+#other imports
+from src.routing_algorithms.ai_routing_epsilon_greedy_normale_casuale import AIRouting_epsilon_greedy_normale_casuale
+from src.routing_algorithms.ai_routing_georouting_upgraded import AIRouting_georouting_upgraded
+from src.routing_algorithms.ai_routing_random_RL import AIRouting_random_RL
+from src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction import AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
+from src.routing_algorithms.ai_routing_UCB import AIRouting_UCB
+
+
+
+
+
 from enum import Enum
 
 
@@ -90,6 +101,14 @@ class RoutingAlgorithm(Enum):
     RND = RandomRouting
     CLO = CloRouting
     AI = AIRouting
+    EGN = AIRouting_epsilon_greedy_normale_casuale
+    GEOUP = AIRouting_georouting_upgraded
+    RND_RL = AIRouting_random_RL
+    EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
+    UCB = AIRouting_UCB
+
+    
+    
 
     @staticmethod
     def keylist():

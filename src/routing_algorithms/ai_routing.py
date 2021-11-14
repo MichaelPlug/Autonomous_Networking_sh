@@ -85,10 +85,6 @@ class AIRouting(BASE_routing):
         
         
         
-        print(config.N_DRONES)
-
-        input()
-        
 
     def feedback(self, drone, id_event, delay, outcome):
         """ return a possible feedback, if the destination drone has received the packet """
