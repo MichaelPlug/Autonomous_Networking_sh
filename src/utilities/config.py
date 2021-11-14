@@ -5,11 +5,11 @@ from src.routing_algorithms.closeset_to_me_routing import CloRouting
 from src.routing_algorithms.ai_routing import AIRouting
 
 #other imports
-import src.routing_algorithms.ai_routing_epsilon_greedy_normale_casuale as AIRouting_epsilon_greedy_normale_casuale
-import src.routing_algorithms.ai_routing_georouting_upgraded as AIRouting_georouting_upgraded
-import src.routing_algorithms.ai_routing_random_RL as AIRouting_random_RL
-import src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction as AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
-import src.routing_algorithms.ai_routing_UCB as AIRouting_UCB
+#import src.routing_algorithms.ai_routing_epsilon_greedy_normale_casuale as AIRouting_epsilon_greedy_normale_casuale
+#import src.routing_algorithms.ai_routing_georouting_upgraded as AIRouting_georouting_upgraded
+#import src.routing_algorithms.ai_routing_random_RL as AIRouting_random_RL
+#import src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction as AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
+#import src.routing_algorithms.ai_routing_UCB as AIRouting_UCB
 
 
 
@@ -103,11 +103,11 @@ class RoutingAlgorithm(Enum):
     RND = RandomRouting
     CLO = CloRouting
     AI = AIRouting
-    EGN = AIRouting_epsilon_greedy_normale_casuale
-    GEOUP = AIRouting_georouting_upgraded
-    RND_RL = AIRouting_random_RL
-    EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
-    UCB = AIRouting_UCB
+    #EGN = AIRouting_epsilon_greedy_normale_casuale
+    #GEOUP = AIRouting_georouting_upgraded
+    #RND_RL = AIRouting_random_RL
+    #EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
+    #UCB = AIRouting_UCB
 
     
     

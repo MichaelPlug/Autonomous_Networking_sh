@@ -332,8 +332,11 @@ class AIRouting(BASE_routing):
                 metrics about the learning process
         """
         
+        """
         print("Hello", q)
         print("Alo", n)
         print("Salut", c)
         print(epsilon)
+        """
+        
         pass

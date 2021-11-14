@@ -3,6 +3,8 @@ PER CHI LEGGERÃ€: NON SO COME IMPORTARE DA SRC.UTILITIES.CONFIG IL NUMERO
 DI DRONI CHE SONO INIZIALIZZATI LÃ€
 """
 
+#INUTILE PERCHÈ È COME RND
+
 from operator import ne
 import numpy as np
 import math
@@ -91,6 +93,7 @@ class AIRouting(BASE_routing):
         # outcome == -1 if the packet/event expired; 0 if the packets has been delivered to the depot
         # Feedback from a delivered or expired packet
         print(self.drone.identifier, "----------", drone, id_event, delay, outcome)
+      
       
         # Be aware, due to network errors we can give the same event to multiple drones and receive multiple feedback for the same packet!!
         # NOTE: reward or update using the old action!!
@@ -258,10 +261,13 @@ class AIRouting(BASE_routing):
                 metrics about the learning process
         """
         
+        """
         print("Hello", q)
         print("Alo", n)
         print("Salut", c)
         print(epsilon)
+        """
+        
         pass
 
    

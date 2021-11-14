@@ -176,8 +176,8 @@ class AIRouting(BASE_routing):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
         
         #we take our distance from the depot
-        best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-        best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
+        #best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
+        #best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
@@ -195,10 +195,16 @@ class AIRouting(BASE_routing):
             
             
             
+            try:
+                #take the maximum value of q
+                max_q = q[self.drone.identifier]
             
-            #take the maximum value of q
-            max_q = q[self.drone.identifier]
-            
+            except Exception as e:
+                
+                q[self.drone.identifier] = 0
+                
+                #take the maximum value of q
+                max_q = q[self.drone.identifier]
             
             
             
@@ -208,15 +214,31 @@ class AIRouting(BASE_routing):
             #loop for every neighbors
             for hello_packet, drone_istance in opt_neighbors:
                 
-                #if we have a more reliable node
-                if (q[drone_istance.identifier] > max_q):
+                try:
+                
+                
+                    #if we have a more reliable node
+                    if (q[drone_istance.identifier] > max_q):
+                        
+                        #select its best value for q function
+                        max_q = q[drone_istance.identifier]
+                        
+                        #select it
+                        max_action = drone_istance
+                        
+            
+                except Exception as e:
                     
-                    #select its best value for q function
-                    max_q = q[drone_istance.identifier]
+                    q[drone_istance.identifier] = 0
                     
-                    #select it
-                    max_action = drone_istance
-                    
+                    #if we have a more reliable node
+                    if (q[drone_istance.identifier] > max_q):
+                        
+                        #select its best value for q function
+                        max_q = q[drone_istance.identifier]
+                        
+                        #select it
+                        max_action = drone_istance
             
         #with epsilon probability we choose the random approach
         else:
@@ -247,8 +269,11 @@ class AIRouting(BASE_routing):
                 metrics about the learning process
         """
         
+        """
         print("Hello", q)
         print("Alo", n)
         print("Salut", c)
         print(epsilon)
+        """
+        
         pass

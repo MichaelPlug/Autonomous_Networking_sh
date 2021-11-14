@@ -95,6 +95,7 @@ class AIRouting(BASE_routing):
         # Feedback from a delivered or expired packet
         print(self.drone.identifier, "----------", drone, id_event, delay, outcome)
       
+      
         # Be aware, due to network errors we can give the same event to multiple drones and receive multiple feedback for the same packet!!
         # NOTE: reward or update using the old action!!
         # STORE WHICH ACTION DID YOU TAKE IN THE PAST.
@@ -198,10 +199,13 @@ class AIRouting(BASE_routing):
                 metrics about the learning process
         """
         
+        """
         print("Hello", q)
         print("Alo", n)
         print("Salut", c)
         print(epsilon)
+        """
+        
         pass
 
     def compute_extimed_position(self, hello_packet):
