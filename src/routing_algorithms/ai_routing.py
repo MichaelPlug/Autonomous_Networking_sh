@@ -72,6 +72,7 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 yet_happened = []
 
 
+
 class AIRouting(BASE_routing):
     
     
@@ -81,6 +82,12 @@ class AIRouting(BASE_routing):
         # random generator
         self.rnd_for_routing_ai = np.random.RandomState(self.simulator.seed)
         self.taken_actions = {}  #id event : (old_action)
+        
+        
+        
+        print(config.N_DRONES)
+
+        input()
         
 
     def feedback(self, drone, id_event, delay, outcome):
@@ -238,7 +245,11 @@ class AIRouting(BASE_routing):
         #generate a random value between 0 and 1
         rand = random.random()
         
-         """
+        
+        
+        
+        
+        """
         
         ##!! INIZIO UCB
         
