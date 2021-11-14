@@ -439,7 +439,7 @@ class AIRouting(BASE_routing):
                     if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    
+                        q_distance = self.compute_distance_to_trajectory(hello_packet)
                         #select it
                         max_action = drone_istance
                         
@@ -458,7 +458,7 @@ class AIRouting(BASE_routing):
                     
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    
+                        q_distance = self.compute_distance_to_trajectory(hello_packet)
                         #select it
                         max_action = drone_istance
 
