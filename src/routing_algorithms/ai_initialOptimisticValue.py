@@ -488,13 +488,6 @@ class AIRouting_OIV(BASE_routing):
         except:
             newEps = min_epsilon
 
-
-#        newEps = min_epsilon
-  #      print(newEps)
-        try:
-            c[(newEps)] += 1
-        except: 
-            c[(newEps)] = 1
       #  newEps = max_epsilon
 #        except:
        # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))

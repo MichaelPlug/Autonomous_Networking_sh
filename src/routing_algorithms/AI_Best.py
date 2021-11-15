@@ -123,8 +123,7 @@ class AIRouting(BASE_routing):
             #TODO
             #maybe also for all the path of packets to incentive themÃ¹
 
-            print(delay)
-            
+
             try:
                 drone_iden = drone.Reward[id_event]
                         

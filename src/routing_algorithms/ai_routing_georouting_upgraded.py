@@ -193,7 +193,7 @@ class AIRouting_georouting_upgraded(BASE_routing):
         
         pass
 
- def compute_extimed_position(self, hello_packet):
+    def compute_extimed_position(self, hello_packet):
         """ estimate the current position of the drone """
 
         # get known info about the neighbor drone

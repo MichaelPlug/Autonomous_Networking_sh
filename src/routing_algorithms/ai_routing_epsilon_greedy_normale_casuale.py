@@ -122,13 +122,12 @@ class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
             #add attempts for the starting drone that has initially the packet
             #TODO
             #maybe also for all the path of packets to incentive themÃ¹            
-
-
-           try:
-           	Reward = self.drone.Reward
-           except:
-           	setattr(self.drone, "Reward", {})
-           	Reward = self.drone.Reward   
+            
+            try:
+            	Reward = self.drone.Reward
+            except:
+            	setattr(self.drone, "Reward", {})
+            	Reward = self.drone.Reward   
             
             
             try:
@@ -268,8 +267,9 @@ class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
                 
             #select one drone randomly
             max_action = random.choice(list_neighbors)
-            
-	self.drone.q = q
+
+
+        self.drone.q = q
 	
 	                    
         try:

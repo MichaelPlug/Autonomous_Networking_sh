@@ -224,7 +224,7 @@ class AIRouting_UCB(BASE_routing):
                 
                 max_action = drone_istance
     
-   	self.drone.q = q
+        self.drone.q = q
         return max_action                
    
         

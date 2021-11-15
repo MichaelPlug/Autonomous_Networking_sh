@@ -266,7 +266,7 @@ class AIRoutingSimpleGeo(BASE_routing):
                 except Exception as e:
                     continue
 
-         self.drone.q = q   
+        self.drone.q = q
             
         #with epsilon probability we choose the random approach
 
@@ -286,10 +286,6 @@ class AIRoutingSimpleGeo(BASE_routing):
 
 #        newEps = min_epsilon
   #      print(newEps)
-        try:
-            c[(newEps)] += 1
-        except: 
-            c[(newEps)] = 1
       #  newEps = max_epsilon
 #        except:
        # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))
