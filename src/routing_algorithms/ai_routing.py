@@ -535,8 +535,9 @@ class AIRouting(BASE_routing):
         try:
 		Reward = self.drone.Reward
 	except
-		newattrr(self.drone, "Reward", {})
+		setattr(self.drone, "Reward", {})
 		Reward = self.drone.Reward
+	
         Reward[pkd.identifier] = max_action
         #return this random drone
         return max_action
