@@ -73,7 +73,7 @@ yet_happened = []
 
 
 
-class AIRouting(BASE_routing):
+class AIRoutingBattery(BASE_routing):
     
     
     
@@ -145,60 +145,7 @@ class AIRouting(BASE_routing):
 
             #Error with 10 drones
             
-            
-            """##!!
-            
-            ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-            
-            n[drone.identifier] += 1
-            
-            
-            #calculate incrementally the reward
-            q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
-            
-            ##!!END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-            
-             
-            
-            """
-            
-            """##!!
-            
-            #METHOD THAT ASSIGN THE REWARD TO THE FIRST INITIAL DRONE
-            
-            try:
-                
-                n[(drone.identifier,drone.next_target())] += 1
-                q[(drone.identifier,drone.next_target())] = q[(drone.identifier,drone.next_target())] + ((1/(n[(drone.identifier,drone.next_target())]))*(R - q[(drone.identifier,drone.next_target())]))
-                
-            except Exception as e:
-                
-                n[(drone.identifier,drone.next_target())] = 1
-                q[(drone.identifier,drone.next_target())] = 0
-                q[(drone.identifier,drone.next_target())] = q[(drone.identifier,drone.next_target())] + ((1/(n[(drone.identifier,drone.next_target())]))*(R - q[(drone.identifier,drone.next_target())]))
-                
-            #END OF THE METHOD THAT ASSIGN THE REWARD TO THE FIRST INITIAL DRONE
-            
-            """
-            
-            
-            """##!!
-            
-            #METHOD THAT ASSIGN THE REWARD ONLY AT THE LAST DRONE
-            try:
-                
-                n[(self.drone.identifier,self.drone.next_target())] += 1
-                q[(self.drone.identifier,self.drone.next_target())] = q[(self.drone.identifier,self.drone.next_target())] + ((1/(n[(self.drone.identifier,self.drone.next_target())]))*(R - q[(self.drone.identifier,self.drone.next_target())]))
-                
-            except Exception as e:
-                
-                n[(self.drone.identifier,self.drone.next_target())] = 1
-                q[(self.drone.identifier,self.drone.next_target())] = 0
-                q[(self.drone.identifier,self.drone.next_target())] = q[(self.drone.identifier,self.drone.next_target())] + ((1/(n[(self.drone.identifier,self.drone.next_target())]))*(R - q[(self.drone.identifier,self.drone.next_target())]))
-            
-            #END OF THE METHOD THAT ASSIGN THE REWARD ONLY AT THE LAST DRONE
-            
-            """
+          
             print(delay)
             
             try:
@@ -228,8 +175,7 @@ class AIRouting(BASE_routing):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
         
         #we take our distance from the depot
-        best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-        best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
+        min_res_en = self.residual_energy
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
@@ -241,158 +187,8 @@ class AIRouting(BASE_routing):
         #generate a random value between 0 and 1
         rand = random.random()
         
-        
-        
-        
-        
-        """
-        
-        ##!! INIZIO UCB
-        
-        import math
-        
-        c = 2
-        
-        
-        
-        
-        try:
-        
-            #take the maximum value of q
-            max_temp = q[self.drone.identifier, self.drone.next_target()] + c* math.sqrt(math.log(config.SIM_DURATION) / self.simulator.cur_step)
-            
-        
-        except Exception as e:
-            
-            q[(self.drone.identifier,self.drone.next_target())] = 0
-            
-            max_temp = q[self.drone.identifier, self.drone.next_target()] + c* math.sqrt(math.log(config.SIM_DURATION) / self.simulator.cur_step)
-            
-    
-        max_action = None
-        
-        for hello_packet, drone_istance in opt_neighbors:
-            
-            
-            
-            try:                
-            
-                
-                temp = q[drone_istance.identifier, hello_packet.next_target] + c* math.sqrt(math.log(30000) / self.simulator.cur_step)
-            
-            
-            
-            except Exception as e:
-                
-                q[(drone_istance.identifier,hello_packet.next_target)] = 0
-                
-                
-                temp = q[drone_istance.identifier, hello_packet.next_target] + c* math.sqrt(math.log(30000) / self.simulator.cur_step)
-            
-            
-        
-        
-            if (temp > max_temp):
-                
-                max_temp = q[drone_istance.identifier, hello_packet.next_target] + c* math.sqrt(math.log(30000) / self.simulator.cur_step)
-                
-                max_action = drone_istance
-    
-        return max_action                
-            
-        " FINE UCB "
-        
-        """
-        
-        
-        """##!!
-        
-        #GEOROUTING EPSILON-GREEDY NORMALE-CASUALE
-        
-        
-        
-        #with 1 - epsilon probability we choose the greedy approach
-        if (rand < (1-epsilon)):
-            
-            
-            
-            
-            try:
-            
-                #take the maximum value of q
-                max_q = q[(self.drone.identifier,self.drone.next_target())]
-            
-            except Exception as e:
-                
-                q[(self.drone.identifier,self.drone.next_target())] = 0
-                
-                max_q = q[(self.drone.identifier,self.drone.next_target())]
-            
-            
-            
-            #initially the packet remains with us
-            max_action = None
-            
-            #loop for every neighbors
-            for hello_packet, drone_istance in opt_neighbors:
-                
-                
-                try:                
-                
-                    #if we have a more reliable node
-                    if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
-                    
-                        #select its best value for q function
-                        max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    
-                        #select it
-                        max_action = drone_istance
-                
-                
-                except Exception as e:
-                    
-                    q[(drone_istance.identifier,hello_packet.next_target)] = 0
-                    
-                    #if we have a more reliable node
-                    if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
-                    
-                        #select its best value for q function
-                        max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    
-                        #select it
-                        max_action = drone_istance
-            
-        #with epsilon probability we choose the random approach
-        else:
-            
-            
-            
-            
-            #create the list of neighbors
-            list_neighbors = []
-            
-            #loop for every drones
-            for hello_packet, drone_istance in opt_neighbors:
-                
-                #append istances of the drones
-                list_neighbors.append(drone_istance)
-                
-            #select one drone randomly
-            max_action = random.choice(list_neighbors)
-            
-        
-        Reward[pkd.identifier] = max_action
-        
-        #return this random drone
-        return max_action
-        
-        
-        #FINE GEOROUTING EPSILON-GREEDY NORMALE-CASUALE
-    
-        """    
-    
-
-        q_distance = best_drone_distance_from_depot
+  
+        q_energy = min_res_en
     
 
 
@@ -429,9 +225,9 @@ class AIRouting(BASE_routing):
                 try:                
                 
                     if (q[(drone_istance.identifier,hello_packet.next_target)] == max_q):
-                        temp_dist = self.compute_distance_to_trajectory(hello_packet)
-                        if temp_dist < q_distance:
-                            q_distance = temp_dist
+                        temp_en = drone_istance.residual_energy
+                        if temp_en < q_energy:
+                            q_energy = temp_en
                             max_action = drone_istance
 
 
@@ -439,7 +235,7 @@ class AIRouting(BASE_routing):
                     if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    	q_distance = self.compute_distance_to_trajectory(hello_packet)
+                    	q_energy = drone_istance.residual_energy
                         #select it
                         max_action = drone_istance
                         
@@ -448,17 +244,18 @@ class AIRouting(BASE_routing):
                     q[(drone_istance.identifier,hello_packet.next_target)] = 0
 
                     if (q[(drone_istance.identifier,hello_packet.next_target)] == max_q):
-                        temp_dist = self.compute_distance_to_trajectory(hello_packet)
-                        if temp_dist < q_distance:
-                            q_distance = temp_dist
+                        temp_en = drone_istance.residual_energy
+                        if temp_en < q_energy:
+                            q_energy = temp_en
                             max_action = drone_istance
+
 
                     #if we have a more reliable node
                     if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
                     
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                        q_distance = self.compute_distance_to_trajectory(hello_packet)
+                        temp_en = drone_istance.residual_energy
                         #select it
                         max_action = drone_istance
 
@@ -507,27 +304,10 @@ class AIRouting(BASE_routing):
             #loop for every neighbors
             for hello_packet, drone_istance in opt_neighbors:
             
-            #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
-            #   exp_position = self.compute_cross_point(hello_packet)
+               res_en = drone_istance.residual_energy
 
-               exp_position = self.compute_extimed_position(hello_packet)
-             #  exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
-
-               exp_distance = self.compute_distance_to_trajectory(hello_packet)
-               
-
-               
-              # time_taken = exp_distance / hello_packet.speed
-               
-               
-               
-               #if (angle < 180 and angle_drone > 180):
-                   
-                #   continue
-               
-
-               if exp_distance < best_drone_distance_from_depot:
-                   best_drone_distance_from_depot = exp_distance
+               if res_en < min_res_en:
+                   min_res_en = res_en
                    max_action = drone_istance
                  #  time_taken_best = best_drone_distance_from_depot / hello_packet.speed
                    
@@ -704,46 +484,3 @@ class AIRouting(BASE_routing):
         """
         
         pass
-
-    def compute_extimed_position(self, hello_packet):
-        """ estimate the current position of the drone """
-
-        # get known info about the neighbor drone
-        hello_message_time = hello_packet.time_step_creation
-        known_position = hello_packet.cur_pos
-        known_speed = hello_packet.speed
-        known_next_target = hello_packet.next_target
-
-        # compute the time elapsed since the message sent and now
-        # elapsed_time in seconds = elapsed_time in steps * step_duration_in_seconds
-        elapsed_time = (self.simulator.cur_step - hello_message_time) * self.simulator.time_step_duration  # seconds
-
-        # distance traveled by drone
-        distance_traveled = elapsed_time * known_speed
-
-        # direction vector
-        a, b = np.asarray(known_position), np.asarray(known_next_target)
-        v_ = (b - a) / np.linalg.norm(b - a)
-
-        # compute the expect position
-        c = a + (distance_traveled * v_)
-
-        return tuple(c)
-
-    def compute_distance_to_trajectory_s(self):
-        p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-        p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
-
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
-
-    def compute_distance_to_trajectory(self, hello_packet):
-
-        exp_position = self.compute_extimed_position(hello_packet)
-
-        #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
-        p1 = np.array([exp_position[0], exp_position[1]])
-        p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-   
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)

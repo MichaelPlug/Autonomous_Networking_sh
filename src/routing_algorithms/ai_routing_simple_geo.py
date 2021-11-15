@@ -73,7 +73,7 @@ yet_happened = []
 
 
 
-class AIRouting(BASE_routing):
+class AIRoutingSimpleGeo(BASE_routing):
     
     
     
@@ -458,7 +458,7 @@ class AIRouting(BASE_routing):
                     
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                   	q_distance = util.euclidean_distance(self.simulator.depot.coords, hello_packet.cur_pos)
+                        q_distance = util.euclidean_distance(self.simulator.depot.coords, hello_packet.cur_pos)
 
                         #select it
                         max_action = drone_istance
@@ -727,27 +727,6 @@ class AIRouting(BASE_routing):
         c = a + (distance_traveled * v_)
 
         return tuple(c)
-
-#Unused
-    def compute_next_position(self, hello_packet):
-        hello_packet_time = hello_packet.time_step_creation
-        hello_packet_position = hello_packet.cur_pos
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target        
-   
-#Unused
-    def compute_cross_point(self, hello_packet):
-
-        exp_pos = self.compute_extimed_position(hello_packet)
-
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target
-
-        # compute the direction vector
-        a, b = np.asarray(exp_pos), np.asarray(hello_packet_next_target)
-    #    v = (b - a) / np.linalg.norm(b - a)
-
-        return self.myFunction(a, b, hello_packet_speed , -1)
 
     def compute_distance_to_trajectory_s(self):
         p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
