@@ -74,7 +74,7 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 yet_happened = []
 
 
-class AIRouting(BASE_routing):
+class AIRouting_random_RL(BASE_routing):
     
     
     
@@ -88,11 +88,11 @@ class AIRouting(BASE_routing):
     def feedback(self, drone, id_event, delay, outcome):
         """ return a possible feedback, if the destination drone has received the packet """
         # Packets that we delivered and still need a feedback
-        print(self.drone.identifier, "----------", self.taken_actions)
+        #print(self.drone.identifier, "----------", self.taken_actions)
 
         # outcome == -1 if the packet/event expired; 0 if the packets has been delivered to the depot
         # Feedback from a delivered or expired packet
-        print(self.drone.identifier, "----------", drone, id_event, delay, outcome)
+        #print(self.drone.identifier, "----------", drone, id_event, delay, outcome)
       
       
         # Be aware, due to network errors we can give the same event to multiple drones and receive multiple feedback for the same packet!!
@@ -134,8 +134,7 @@ class AIRouting(BASE_routing):
                 temp = (temp - 0) / (2000 - 0)
                 #take the reward
                 R = 1 + temp 
-                print("ciao")
-                print(R)
+           
                 
                 #R = 2 * (1 - delay/self.simulator.event_duration)
                 
