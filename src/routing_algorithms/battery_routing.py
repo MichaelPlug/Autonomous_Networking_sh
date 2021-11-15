@@ -13,7 +13,7 @@ class BatteryRouting(BASE_routing):
         best_drone = None
 
         for hpk, drone_istance in opt_neighbors:
-            res_en = drone_instance.residual_energy  # without estimation, a simple geographic approach
+            res_en = drone_istance.residual_energy  # without estimation, a simple geographic approach
             if res_en < min_res_en:
                 min_res_en = res_en
                 best_drone = drone_istance
