@@ -23,18 +23,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 #import the library for random values
 import random
 
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
-
-c = {}
-c2 = {}
-
-Reward = {}
-
 
 
 """##!!
@@ -103,10 +91,7 @@ class AIRoutingBattery(BASE_routing):
        
         
         #if the packet isn't still treated, then we train system for it
-        if (id_event not in yet_happened):
-        
-            #add it to list of visited packet (to avoid duplicates)
-            yet_happened.append(id_event)    
+        if True:
 
             "Doubt: i don't know the utility of this"        
             if id_event in self.taken_actions:
@@ -147,19 +132,28 @@ class AIRoutingBattery(BASE_routing):
             print(delay)
             
             try:
-                drone_iden = Reward[id_event]
-                
+                drone_iden = drone.Reward[id_event]
+                        
             except Exception as e:
                 
                 drone_iden = drone
-            
+                
             try:
-                n[(drone_iden.identifier,drone_iden.next_target())] += 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+            	n = self.drone.n
+            except:
+                setattr(self.drone, "n", {})
+                
+            try:
+            	q = self.drone.q
+            except:
+                setattr(self.drone, "q", {})
+                
+            try:
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] += 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
             except Exception as e:
-                n[(drone_iden.identifier,drone_iden.next_target())] = 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = R #0
-
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] = 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = R #0
 
 
             
@@ -188,6 +182,14 @@ class AIRoutingBattery(BASE_routing):
   
         q_energy = min_res_en
     
+        try:
+           q = self.drone.q
+           n = self.drone.n
+        except:
+           setattr(self.drone, "q", {})
+           q = self.drone.q
+           setattr(self.drone, "n", {})
+           n = self.drone.n
 
 
         a = True
@@ -264,8 +266,8 @@ class AIRoutingBattery(BASE_routing):
                     tot_n += n[(drone_istance.identifier,hello_packet.next_target)] 
                 except Exception as e:
                     continue
-
             
+        self.drone.q = q                
             
         #with epsilon probability we choose the random approach
 
@@ -312,7 +314,12 @@ class AIRoutingBattery(BASE_routing):
 
             
            
-            
+        try:
+           Reward = self.drone.Reward
+        except:
+           setattr(self.drone, "Reward", {})
+           Reward = self.drone.Reward   
+                        
         
         Reward[pkd.identifier] = max_action
         #return this random drone

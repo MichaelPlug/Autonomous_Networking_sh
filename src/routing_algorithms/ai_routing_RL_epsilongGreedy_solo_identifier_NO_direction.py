@@ -23,17 +23,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 #import the library for random values
 import random
 
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
-
-c = {}
-c2 = {}
-
-Reward = {}
 
 
 """
@@ -68,8 +57,6 @@ epsilon = random.random()
 #normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
-#list of yet taken feedback
-yet_happened = []
 
 
 class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
@@ -100,10 +87,8 @@ class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
        
         
         #if the packet isn't still treated, then we train system for it
-        if (id_event not in yet_happened):
+        if True:
         
-            #add it to list of visited packet (to avoid duplicates)
-            yet_happened.append(id_event)    
 
             "Doubt: i don't know the utility of this"        
             if id_event in self.taken_actions:
@@ -147,23 +132,33 @@ class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
             ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
             
             try:
+            	n = self.drone.n
+            except:
+                setattr(self.drone, "n", {})
+                
+            try:
+            	q = self.drone.q
+            except:
+                setattr(self.drone, "q", {})
             
-                n[drone.identifier] += 1
+            try:
+            
+                self.drone.n[drone.identifier] += 1
             
             
                 #calculate incrementally the reward
-                q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
+                self.drone.q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
             
             
             except Exception as e:
                 
-                n[drone.identifier] = 1
+                self.drone.n[drone.identifier] = 1
             
             
-                q[drone.identifier] = 0
+                self.drone.q[drone.identifier] = 0
             
                 #calculate incrementally the reward
-                q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
+                self.drone.q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
             
             
             ##!!END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
@@ -189,6 +184,16 @@ class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
         
         #generate a random value between 0 and 1
         rand = random.random()
+        
+        
+        try:
+           q = self.drone.q
+           n = self.drone.n
+        except:
+           setattr(self.drone, "q", {})
+           q = self.drone.q
+           setattr(self.drone, "n", {})
+           n = self.drone.n
         
         #with 1 - epsilon probability we choose the greedy approach
         if (rand < (1-epsilon)):
@@ -255,7 +260,7 @@ class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
             #select one drone randomly
             max_action = random.choice(list_neighbors)
             
-            
+        self.drone.q = q    
         #return this random drone
         return max_action
     
@@ -296,48 +301,38 @@ class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
 
         # direction vector
         a, b = np.asarray(known_position), np.asarray(known_next_target)
-        v_ = (b - a) / np.linalg.norm(b - a)
+        if np.linalg.norm(b - a) != 0:
+        	v_ = (b - a) / np.linalg.norm(b - a)
+        else:
+        	v_ = 0
 
         # compute the expect position
         c = a + (distance_traveled * v_)
 
         return tuple(c)
 
-#Unused
-    def compute_next_position(self, hello_packet):
-        hello_packet_time = hello_packet.time_step_creation
-        hello_packet_position = hello_packet.cur_pos
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target        
-   
-#Unused
-    def compute_cross_point(self, hello_packet):
-
-        exp_pos = self.compute_extimed_position(hello_packet)
-
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target
-
-        # compute the direction vector
-        a, b = np.asarray(exp_pos), np.asarray(hello_packet_next_target)
-    #    v = (b - a) / np.linalg.norm(b - a)
-
-        return self.myFunction(a, b, hello_packet_speed , -1)
-
     def compute_distance_to_trajectory_s(self):
         p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
         p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
+        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
 
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return 0
 
     def compute_distance_to_trajectory(self, hello_packet):
 
         exp_position = self.compute_extimed_position(hello_packet)
+       # exp_position = hello_packet.cur_pos
 
         #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
         p1 = np.array([exp_position[0], exp_position[1]])
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-   
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return 0

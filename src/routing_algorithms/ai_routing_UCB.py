@@ -23,18 +23,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 #import the library for random values
 import random
 
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
-
-c = {}
-c2 = {}
-
-Reward = {}
-
 
 
 """##!!
@@ -68,9 +56,6 @@ epsilon = random.random()
 #normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
-#list of yet taken feedback
-yet_happened = []
-
 
 class AIRouting_UCB(BASE_routing):
     
@@ -101,10 +86,8 @@ class AIRouting_UCB(BASE_routing):
        
         
         #if the packet isn't still treated, then we train system for it
-        if (id_event not in yet_happened):
-        
-            #add it to list of visited packet (to avoid duplicates)
-            yet_happened.append(id_event)    
+        if True:
+       
 
             "Doubt: i don't know the utility of this"        
             if id_event in self.taken_actions:
@@ -140,78 +123,31 @@ class AIRouting_UCB(BASE_routing):
             #TODO
             #maybe also for all the path of packets to incentive themÃ¹
 
-            #Error with 10 drones
             
-            
-            """##!!
-            
-            ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-            
-            n[drone.identifier] += 1
-            
-            
-            #calculate incrementally the reward
-            q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
-            
-            ##!!END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-            
-             
-            
-            """
-            
-            """##!!
-            
-            #METHOD THAT ASSIGN THE REWARD TO THE FIRST INITIAL DRONE
-            
-            try:
-                
-                n[(drone.identifier,drone.next_target())] += 1
-                q[(drone.identifier,drone.next_target())] = q[(drone.identifier,drone.next_target())] + ((1/(n[(drone.identifier,drone.next_target())]))*(R - q[(drone.identifier,drone.next_target())]))
-                
-            except Exception as e:
-                
-                n[(drone.identifier,drone.next_target())] = 1
-                q[(drone.identifier,drone.next_target())] = 0
-                q[(drone.identifier,drone.next_target())] = q[(drone.identifier,drone.next_target())] + ((1/(n[(drone.identifier,drone.next_target())]))*(R - q[(drone.identifier,drone.next_target())]))
-                
-            #END OF THE METHOD THAT ASSIGN THE REWARD TO THE FIRST INITIAL DRONE
-            
-            """
-            
-            
-            """##!!
-            
-            #METHOD THAT ASSIGN THE REWARD ONLY AT THE LAST DRONE
-            try:
-                
-                n[(self.drone.identifier,self.drone.next_target())] += 1
-                q[(self.drone.identifier,self.drone.next_target())] = q[(self.drone.identifier,self.drone.next_target())] + ((1/(n[(self.drone.identifier,self.drone.next_target())]))*(R - q[(self.drone.identifier,self.drone.next_target())]))
-                
-            except Exception as e:
-                
-                n[(self.drone.identifier,self.drone.next_target())] = 1
-                q[(self.drone.identifier,self.drone.next_target())] = 0
-                q[(self.drone.identifier,self.drone.next_target())] = q[(self.drone.identifier,self.drone.next_target())] + ((1/(n[(self.drone.identifier,self.drone.next_target())]))*(R - q[(self.drone.identifier,self.drone.next_target())]))
-            
-            #END OF THE METHOD THAT ASSIGN THE REWARD ONLY AT THE LAST DRONE
-            
-            """
 
-            
             try:
-                drone_iden = Reward[id_event]
-                
+                drone_iden = drone.Reward[id_event]
+                        
             except Exception as e:
                 
                 drone_iden = drone
-            
+                
             try:
-                n[(drone_iden.identifier,drone_iden.next_target())] += 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+            	n = self.drone.n
+            except:
+                setattr(self.drone, "n", {})
+                
+            try:
+            	q = self.drone.q
+            except:
+                setattr(self.drone, "q", {})
+                
+            try:
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] += 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
             except Exception as e:
-                n[(drone_iden.identifier,drone_iden.next_target())] = 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = R #0
-
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] = 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = R #0
 
 
             
@@ -236,7 +172,14 @@ class AIRouting_UCB(BASE_routing):
         
         c = 2
         
-        
+        try:
+           q = self.drone.q
+           n = self.drone.n
+        except:
+           setattr(self.drone, "q", {})
+           q = self.drone.q
+           setattr(self.drone, "n", {})
+           n = self.drone.n        
         
         
         try:
@@ -281,6 +224,7 @@ class AIRouting_UCB(BASE_routing):
                 
                 max_action = drone_istance
     
+   	self.drone.q = q
         return max_action                
    
         

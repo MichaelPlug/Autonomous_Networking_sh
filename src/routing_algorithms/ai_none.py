@@ -23,18 +23,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 #import the library for random values
 import random
 
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
-
-c = {}
-c2 = {}
-
-Reward = {}
-
 
 
 """##!!
@@ -68,8 +56,7 @@ epsilon = random.random()
 #normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
-#list of yet taken feedback
-yet_happened = []
+
 
 
 class AIRouting_None(BASE_routing):

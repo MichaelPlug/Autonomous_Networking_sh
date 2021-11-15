@@ -23,18 +23,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 #import the library for random values
 import random
 
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
-
-c = {}
-c2 = {}
-
-Reward = {}
-
 
 
 """##!!
@@ -67,9 +55,6 @@ epsilon = random.random()
 
 #normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
-
-#list of yet taken feedback
-yet_happened = []
 
 
 
@@ -208,7 +193,7 @@ class AIRouting_georouting_upgraded(BASE_routing):
         
         pass
 
-    def compute_extimed_position(self, hello_packet):
+ def compute_extimed_position(self, hello_packet):
         """ estimate the current position of the drone """
 
         # get known info about the neighbor drone
@@ -229,7 +214,7 @@ class AIRouting_georouting_upgraded(BASE_routing):
         if np.linalg.norm(b - a) != 0:
         	v_ = (b - a) / np.linalg.norm(b - a)
         else:
-        	v_ = [0, 0]
+        	v_ = 0
 
         # compute the expect position
         c = a + (distance_traveled * v_)
@@ -238,26 +223,26 @@ class AIRouting_georouting_upgraded(BASE_routing):
 
     def compute_distance_to_trajectory_s(self):
         p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
         p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
+        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
 
+        
         if np.linalg.norm(p2-p1) != 0:
         	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
         else: 
-        	return [0, 0]
-
+        	return 0
 
     def compute_distance_to_trajectory(self, hello_packet):
 
         exp_position = self.compute_extimed_position(hello_packet)
+       # exp_position = hello_packet.cur_pos
 
         #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
         p1 = np.array([exp_position[0], exp_position[1]])
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-   
+        
         if np.linalg.norm(p2-p1) != 0:
         	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
         else: 
-        	return [0, 0]
-
+        	return 0

@@ -24,15 +24,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 import random
 
 
-
-
-c = {}
-c2 = {}
-
-Reward = {}
-
-
-
 """##!!
 ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
 #create dictionaries (because they are more indicated)
@@ -67,12 +58,6 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 #list of yet taken feedback
 yet_happened = []
 
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
 class AIRouting_OIV(BASE_routing):
     
    
@@ -105,10 +90,7 @@ class AIRouting_OIV(BASE_routing):
        
         
         #if the packet isn't still treated, then we train system for it
-        if (id_event not in yet_happened):
-        
-            #add it to list of visited packet (to avoid duplicates)
-            yet_happened.append(id_event)    
+        if True:
 
             "Doubt: i don't know the utility of this"        
             if id_event in self.taken_actions:
@@ -203,19 +185,28 @@ class AIRouting_OIV(BASE_routing):
             
             
             try:
-                drone_iden = Reward[id_event]
-                
+                drone_iden = drone.Reward[id_event]
+                        
             except Exception as e:
                 
                 drone_iden = drone
-            
+                
             try:
-                n[(drone_iden.identifier,drone_iden.next_target())] += 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+            	n = self.drone.n
+            except:
+                setattr(self.drone, "n", {})
+                
+            try:
+            	q = self.drone.q
+            except:
+                setattr(self.drone, "q", {})
+                
+            try:
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] += 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
             except Exception as e:
-                n[(drone_iden.identifier,drone_iden.next_target())] = 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = R #0
-
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] = 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = R #0
 
 
             
@@ -395,6 +386,15 @@ class AIRouting_OIV(BASE_routing):
 
         q_distance = best_drone_distance_from_depot
     
+   	        
+        try:
+           q = self.drone.q
+           n = self.drone.n
+        except:
+           setattr(self.drone, "q", {})
+           q = self.drone.q
+           setattr(self.drone, "n", {})
+           n = self.drone.n
 
 
         a = True
@@ -471,7 +471,7 @@ class AIRouting_OIV(BASE_routing):
                 except Exception as e:
                     continue
 
-            
+        self.drone.q = q       
             
         #with epsilon probability we choose the random approach
 
@@ -533,8 +533,13 @@ class AIRouting_OIV(BASE_routing):
                  #  time_taken_best = best_drone_distance_from_depot / hello_packet.speed
                    
 
+        try:
+           Reward = self.drone.Reward
+        except:
+           setattr(self.drone, "Reward", {})
+           Reward = self.drone.Reward   
             
-           
+                        
             
         
         Reward[pkd.identifier] = max_action
@@ -724,7 +729,10 @@ class AIRouting_OIV(BASE_routing):
 
         # direction vector
         a, b = np.asarray(known_position), np.asarray(known_next_target)
-        v_ = (b - a) / np.linalg.norm(b - a)
+        if np.linalg.norm(b - a) != 0:
+        	v_ = (b - a) / np.linalg.norm(b - a)
+        else:
+        	v_ = 0
 
         # compute the expect position
         c = a + (distance_traveled * v_)
@@ -733,18 +741,26 @@ class AIRouting_OIV(BASE_routing):
 
     def compute_distance_to_trajectory_s(self):
         p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
         p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
+        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
 
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return 0
 
     def compute_distance_to_trajectory(self, hello_packet):
 
         exp_position = self.compute_extimed_position(hello_packet)
+       # exp_position = hello_packet.cur_pos
 
         #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
         p1 = np.array([exp_position[0], exp_position[1]])
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-   
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return 0
