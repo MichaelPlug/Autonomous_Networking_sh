@@ -23,19 +23,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 #import the library for random values
 import random
 
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
-
-c = {}
-c2 = {}
-
-Reward = {}
-
-
 
 """##!!
 ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
@@ -103,7 +90,7 @@ class AIRouting(BASE_routing):
        
         
         #if the packet isn't still treated, then we train system for it
-        if (id_event not in yet_happened):
+        if True:
         
             #add it to list of visited packet (to avoid duplicates)
             yet_happened.append(id_event)    
@@ -202,18 +189,18 @@ class AIRouting(BASE_routing):
             print(delay)
             
             try:
-                drone_iden = Reward[id_event]
-                
+                drone_iden = drone.Reward[id_event]
+                        
             except Exception as e:
                 
                 drone_iden = drone
-            
+                        
             try:
-                n[(drone_iden.identifier,drone_iden.next_target())] += 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] += 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
             except Exception as e:
-                n[(drone_iden.identifier,drone_iden.next_target())] = 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = R #0
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] = 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = R #0
 
 
 
@@ -393,9 +380,16 @@ class AIRouting(BASE_routing):
     
 
         q_distance = best_drone_distance_from_depot
+        
+        try:
+        	q = self.drone.q
+        	n = self.drone.n
+        except:
+		setattr(self.drone, "q", {})
+		q = self.drone.q
+		setattr(self.drone, "n", {})
+		n = self.drone.n
     
-
-
         a = True
         if a:
      #   if (rand < (1-newEps)):
@@ -469,7 +463,10 @@ class AIRouting(BASE_routing):
                     tot_n += n[(drone_istance.identifier,hello_packet.next_target)] 
                 except Exception as e:
                     continue
+               
+        self.drone.q = n
 
+   
             
             
         #with epsilon probability we choose the random approach
@@ -535,7 +532,12 @@ class AIRouting(BASE_routing):
             
            
             
-        
+        try:
+		Reward = self.drone.Reward
+	except
+		setattr(self.drone, "Reward", {})
+		Reward = self.drone.Reward
+	
         Reward[pkd.identifier] = max_action
         #return this random drone
         return max_action
