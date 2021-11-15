@@ -15,7 +15,7 @@ from src.routing_algorithms.ai_routing_random_RL import AIRouting_random_RL
 from src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction import AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
 from src.routing_algorithms.ai_routing_UCB import AIRouting_UCB
 from src.routing_algorithms.ai_none import AIRouting_None
-
+from src.routing_algorithms.ai_initialOptimisticValue import AIRouting_OIV
 
 
 
@@ -111,15 +111,14 @@ class RoutingAlgorithm(Enum):
     AI = AIRouting
     EGN = AIRouting_epsilon_greedy_normale_casuale
     GEOUP = AIRouting_georouting_upgraded
-
     NONE = AIRouting_None
-
     RND_RL = AIRouting_random_RL
     EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
     UCB = AIRouting_UCB
     BR = BatteryRouting
     AIB = AIRoutingBattery
     AISG = AIRoutingSimpleGeo
+    OIV = AIRouting_OIV
     
     
 
