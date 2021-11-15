@@ -510,7 +510,7 @@ class AIRouting(BASE_routing):
             #   exp_position = hello_packet.cur_pos  # without estimation, a simple geographic approach
             #   exp_position = self.compute_cross_point(hello_packet)
 
-               exp_position = self.compute_extimed_position(hello_packet)
+              # exp_position = self.compute_extimed_position(hello_packet)
              #  exp_distance = util.euclidean_distance(exp_position, self.simulator.depot.coords)
 
                exp_distance = self.compute_distance_to_trajectory(hello_packet)
@@ -723,7 +723,10 @@ class AIRouting(BASE_routing):
 
         # direction vector
         a, b = np.asarray(known_position), np.asarray(known_next_target)
-        v_ = (b - a) / np.linalg.norm(b - a)
+        if np.linalg.norm(b - a) != 0:
+        	v_ = (b - a) / np.linalg.norm(b - a)
+        else:
+        	v_ = [0, 0]
 
         # compute the expect position
         c = a + (distance_traveled * v_)
@@ -732,18 +735,27 @@ class AIRouting(BASE_routing):
 
     def compute_distance_to_trajectory_s(self):
         p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
         p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
+        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
 
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return [0, 0]
 
     def compute_distance_to_trajectory(self, hello_packet):
 
         exp_position = self.compute_extimed_position(hello_packet)
+        exp_position = hello_packet.cur_pos
 
         #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
         p1 = np.array([exp_position[0], exp_position[1]])
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-   
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return [0, 0]
+

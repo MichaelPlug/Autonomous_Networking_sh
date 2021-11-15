@@ -226,7 +226,10 @@ class AIRouting(BASE_routing):
 
         # direction vector
         a, b = np.asarray(known_position), np.asarray(known_next_target)
-        v_ = (b - a) / np.linalg.norm(b - a)
+        if np.linalg.norm(b - a) != 0:
+        	v_ = (b - a) / np.linalg.norm(b - a)
+        else:
+        	v_ = [0, 0]
 
         # compute the expect position
         c = a + (distance_traveled * v_)
@@ -238,7 +241,11 @@ class AIRouting(BASE_routing):
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
         p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
 
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return [0, 0]
+
 
     def compute_distance_to_trajectory(self, hello_packet):
 
@@ -249,4 +256,8 @@ class AIRouting(BASE_routing):
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
    
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return [0, 0]
+

@@ -57,8 +57,8 @@ random.seed(2)
 
 #epsilon must be smaller and it represents probability for epsilon-greedy
 second_epsilon = 0.05
-min_epsilon = 0.05
-max_epsilon = 0.25  
+min_epsilon = 0.01
+max_epsilon = 0.05  
 
 georouting_on_next_step = True
 
@@ -297,7 +297,7 @@ class AIRoutingBattery(BASE_routing):
         #newEps = max_epsilon
  #       newEps =  min_epsilon + (math.exp(-1*(tot_n**2)/(k**4)) * (max_epsilon - min_epsilon)) 
 
-        if rand < newEps:
+        if rand < -1 :
             
             max_action = None
             

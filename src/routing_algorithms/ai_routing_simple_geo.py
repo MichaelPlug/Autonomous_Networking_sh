@@ -57,8 +57,8 @@ random.seed(2)
 
 #epsilon must be smaller and it represents probability for epsilon-greedy
 second_epsilon = 0.05
-min_epsilon = 0.05
-max_epsilon = 0.25  
+min_epsilon = 0.01
+max_epsilon = 0.04  
 
 georouting_on_next_step = True
 
@@ -483,7 +483,7 @@ class AIRoutingSimpleGeo(BASE_routing):
          #    newEps = min_epsilon + ((1-math.tanh(tot_n/k))) * (max_epsilon - min_epsilon)
            # newEps =  min_epsilon + (math.exp(-1*(tot_n)/(k)) * (max_epsilon - min_epsilon)) 
          #   newEps = min_epsilon + 
-            newEps = min_epsilon + ((1-(tot_n)/((tot_n)+k)) *(max_epsilon - min_epsilon))
+            newEps = min_epsilon + ((1-((tot_n)/((tot_n)+k))) *(max_epsilon - min_epsilon))
        #     newEps = min_epsilon + (k /(k - tot_n)) *(max_epsilon - min_epsilon)
         except:
             newEps = min_epsilon
