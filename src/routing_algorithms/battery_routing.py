@@ -9,7 +9,7 @@ class BatteryRouting(BASE_routing):
 
     def relay_selection(self, opt_neighbors, pkd):
         """ arg min score  -> battery approach, take the drone with less battery """
-        min_res_en= self.residual_energy
+        min_res_en= self.drone.residual_energy
         best_drone = None
 
         for hpk, drone_istance in opt_neighbors:

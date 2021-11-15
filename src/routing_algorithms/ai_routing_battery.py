@@ -175,7 +175,7 @@ class AIRoutingBattery(BASE_routing):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
         
         #we take our distance from the depot
-        min_res_en = self.residual_energy
+        min_res_en = self.drone.residual_energy
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
@@ -235,7 +235,7 @@ class AIRoutingBattery(BASE_routing):
                     if (q[(drone_istance.identifier,hello_packet.next_target)] > max_q):
                         #select its best value for q function
                         max_q = q[(drone_istance.identifier,hello_packet.next_target)]
-                    	q_energy = drone_istance.residual_energy
+                        q_energy = drone_istance.residual_energy
                         #select it
                         max_action = drone_istance
                         
