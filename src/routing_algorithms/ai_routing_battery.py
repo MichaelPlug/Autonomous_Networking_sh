@@ -287,10 +287,6 @@ class AIRoutingBattery(BASE_routing):
 
 #        newEps = min_epsilon
   #      print(newEps)
-        try:
-            c[(newEps)] += 1
-        except: 
-            c[(newEps)] = 1
       #  newEps = max_epsilon
 #        except:
        # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))
