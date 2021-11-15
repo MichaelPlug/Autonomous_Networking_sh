@@ -24,15 +24,6 @@ import src.utilities.config as config #try self.simulator.n_drones
 import random
 
 
-
-
-c = {}
-c2 = {}
-
-Reward = {}
-
-
-
 """##!!
 ##FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
 #create dictionaries (because they are more indicated)
@@ -64,15 +55,6 @@ epsilon = random.random()
 #normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
-#list of yet taken feedback
-yet_happened = []
-
-#each element indicates scores calculated for each drone
-q = {}
-
-#each element indicates attempts executed for each drone
-n = {}
-
 class AIRouting(BASE_routing):
     
    
@@ -91,11 +73,11 @@ class AIRouting(BASE_routing):
     def feedback(self, drone, id_event, delay, outcome):
         """ return a possible feedback, if the destination drone has received the packet """
         # Packets that we delivered and still need a feedback
-        #print(self.drone.identifier, "----------", self.taken_actions)
+        print(self.drone.identifier, "----------", self.taken_actions)
 
         # outcome == -1 if the packet/event expired; 0 if the packets has been delivered to the depot
         # Feedback from a delivered or expired packet
-        #print(self.drone.identifier, "----------", drone, id_event, delay, outcome)
+        print(self.drone.identifier, "----------", drone, id_event, delay, outcome)
       
         # Be aware, due to network errors we can give the same event to multiple drones and receive multiple feedback for the same packet!!
         # NOTE: reward or update using the old action!!
@@ -105,11 +87,8 @@ class AIRouting(BASE_routing):
        
         
         #if the packet isn't still treated, then we train system for it
-        if (id_event not in yet_happened):
+        if True:
         
-            #add it to list of visited packet (to avoid duplicates)
-            yet_happened.append(id_event)    
-
             "Doubt: i don't know the utility of this"        
             if id_event in self.taken_actions:
                 action = self.taken_actions[id_event]
@@ -200,21 +179,31 @@ class AIRouting(BASE_routing):
             #END OF THE METHOD THAT ASSIGN THE REWARD ONLY AT THE LAST DRONE
             
             """
-        
+            print(delay)
             
             try:
-                drone_iden = Reward[id_event]
-                
+                drone_iden = drone.Reward[id_event]
+                        
             except Exception as e:
                 
                 drone_iden = drone
-            
+                
             try:
-                n[(drone_iden.identifier,drone_iden.next_target())] += 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
+            	n = self.drone.n
+            except:
+                setattr(self.drone, "n", {})
+                
+            try:
+            	q = self.drone.q
+            except:
+                setattr(self.drone, "q", {})
+                
+            try:
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] += 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = q[(drone_iden.identifier,drone_iden.next_target())] + ((1/(n[(drone_iden.identifier,drone_iden.next_target())]))*(R - q[(drone_iden.identifier,drone_iden.next_target())]))
             except Exception as e:
-                n[(drone_iden.identifier,drone_iden.next_target())] = 1
-                q[(drone_iden.identifier,drone_iden.next_target())] = R #0
+                self.drone.n[(drone_iden.identifier,drone_iden.next_target())] = 1
+                self.drone.q[(drone_iden.identifier,drone_iden.next_target())] = R #0
 
 
 
@@ -394,7 +383,15 @@ class AIRouting(BASE_routing):
     
 
         q_distance = best_drone_distance_from_depot
-    
+        
+        try:
+           q = self.drone.q
+           n = self.drone.n
+        except:
+           setattr(self.drone, "q", {})
+           q = self.drone.q
+           setattr(self.drone, "n", {})
+           n = self.drone.n
 
 
         a = True
@@ -472,7 +469,8 @@ class AIRouting(BASE_routing):
                     continue
 
             
-            
+        self.drone.q = q   
+        
         #with epsilon probability we choose the random approach
 
                 #with 1 - epsilon probability we choose the greedy approach
@@ -491,10 +489,7 @@ class AIRouting(BASE_routing):
 
 #        newEps = min_epsilon
   #      print(newEps)
-        try:
-            c[(newEps)] += 1
-        except: 
-            c[(newEps)] = 1
+
       #  newEps = max_epsilon
 #        except:
        # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))
@@ -534,7 +529,12 @@ class AIRouting(BASE_routing):
                    
 
             
-           
+                    
+        try:
+           Reward = self.drone.Reward
+        except:
+           setattr(self.drone, "Reward", {})
+           Reward = self.drone.Reward   
             
         
         Reward[pkd.identifier] = max_action
@@ -703,6 +703,7 @@ class AIRouting(BASE_routing):
         print("Salut", c)
         print(epsilon)
         """
+        print("ho risoltoooooo")
         
         pass
 
