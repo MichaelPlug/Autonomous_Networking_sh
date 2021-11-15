@@ -57,8 +57,8 @@ random.seed(2)
 
 #epsilon must be smaller and it represents probability for epsilon-greedy
 second_epsilon = 0.05
-min_epsilon = 0.01
-max_epsilon = 0.04  
+min_epsilon = 0.05
+max_epsilon = 0.25  
 
 georouting_on_next_step = True
 
