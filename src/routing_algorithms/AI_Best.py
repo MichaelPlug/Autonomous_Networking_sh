@@ -23,11 +23,7 @@ import src.utilities.config as config #try self.simulator.n_drones
 #import the library for random values
 import random
 
-#each element indicates scores calculated for each drone
-q = {}
 
-#each element indicates attempts executed for each drone
-n = {}
 
 
 c = {}
@@ -71,11 +67,15 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 #list of yet taken feedback
 yet_happened = []
 
+#each element indicates scores calculated for each drone
+q = {}
 
+#each element indicates attempts executed for each drone
+n = {}
 
 class AIRouting(BASE_routing):
     
-    
+   
     
     def __init__(self, drone, simulator):
         BASE_routing.__init__(self, drone, simulator)
@@ -83,6 +83,8 @@ class AIRouting(BASE_routing):
         self.rnd_for_routing_ai = np.random.RandomState(self.simulator.seed)
         self.taken_actions = {}  #id event : (old_action)
         
+        
+       
         
         
 
@@ -134,8 +136,7 @@ class AIRouting(BASE_routing):
                 temp = (temp - 0) / (2000 - 0)
                 #take the reward
                 R = 1 + temp 
-                print("ciao")
-                print(R)
+              
                 
                 #R = 2 * (1 - delay/self.simulator.event_duration)
                 
