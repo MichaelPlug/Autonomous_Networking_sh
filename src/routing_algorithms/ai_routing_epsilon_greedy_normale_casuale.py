@@ -340,7 +340,7 @@ class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
         """
         
         pass
-<<<<<<< HEAD
+
     
     
     def compute_extimed_position(self, hello_packet):
@@ -406,5 +406,4 @@ class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
    
         return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
-=======
->>>>>>> 3a2ba1f242090f178d0ad35f53931abc0874ae5c
+
