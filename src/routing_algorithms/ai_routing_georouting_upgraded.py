@@ -226,40 +226,26 @@ class AIRouting_georouting_upgraded(BASE_routing):
 
         # direction vector
         a, b = np.asarray(known_position), np.asarray(known_next_target)
-        v_ = (b - a) / np.linalg.norm(b - a)
+        if np.linalg.norm(b - a) != 0:
+        	v_ = (b - a) / np.linalg.norm(b - a)
+        else:
+        	v_ = [0, 0]
 
         # compute the expect position
         c = a + (distance_traveled * v_)
 
         return tuple(c)
 
-#Unused
-    def compute_next_position(self, hello_packet):
-        hello_packet_time = hello_packet.time_step_creation
-        hello_packet_position = hello_packet.cur_pos
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target        
-   
-#Unused
-    def compute_cross_point(self, hello_packet):
-
-        exp_pos = self.compute_extimed_position(hello_packet)
-
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target
-
-        # compute the direction vector
-        a, b = np.asarray(exp_pos), np.asarray(hello_packet_next_target)
-    #    v = (b - a) / np.linalg.norm(b - a)
-
-        return self.myFunction(a, b, hello_packet_speed , -1)
-
     def compute_distance_to_trajectory_s(self):
         p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
         p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
 
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return [0, 0]
+
 
     def compute_distance_to_trajectory(self, hello_packet):
 
@@ -270,4 +256,8 @@ class AIRouting_georouting_upgraded(BASE_routing):
         p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
    
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        if np.linalg.norm(p2-p1) != 0:
+        	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+        else: 
+        	return [0, 0]
+

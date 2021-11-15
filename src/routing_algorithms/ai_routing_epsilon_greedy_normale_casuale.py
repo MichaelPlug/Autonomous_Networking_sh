@@ -225,8 +225,8 @@ class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
         """ arg min score  -> geographical approach, take the drone closest to the depot """
         
         #we take our distance from the depot
-        best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-        best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
+       # best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
+        #best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
@@ -340,6 +340,7 @@ class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
         """
         
         pass
+<<<<<<< HEAD
     
     
     def compute_extimed_position(self, hello_packet):
@@ -405,3 +406,5 @@ class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
         p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
    
         return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+=======
+>>>>>>> 3a2ba1f242090f178d0ad35f53931abc0874ae5c

@@ -225,12 +225,6 @@ class AIRouting_UCB(BASE_routing):
 
         """ arg min score  -> geographical approach, take the drone closest to the depot """
         
-        #we take our distance from the depot
-        best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-        best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
-        #initially drone closest is us (we take to the depot the
-        #packet without any help)
-        best_drone = None
         
        
         
@@ -306,43 +300,3 @@ class AIRouting_UCB(BASE_routing):
         """
         
         pass
-    
-    
-#Unused
-    def compute_next_position(self, hello_packet):
-        hello_packet_time = hello_packet.time_step_creation
-        hello_packet_position = hello_packet.cur_pos
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target        
-   
-#Unused
-    def compute_cross_point(self, hello_packet):
-
-        exp_pos = self.compute_extimed_position(hello_packet)
-
-        hello_packet_speed = hello_packet.speed
-        hello_packet_next_target = hello_packet.next_target
-
-        # compute the direction vector
-        a, b = np.asarray(exp_pos), np.asarray(hello_packet_next_target)
-    #    v = (b - a) / np.linalg.norm(b - a)
-
-        return self.myFunction(a, b, hello_packet_speed , -1)
-
-    def compute_distance_to_trajectory_s(self):
-        p1 = np.array([self.drone.coords[0], self.drone.coords[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-        p2 = np.array([self.drone.next_target()[0], self.drone.next_target()[1]])
-
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
-
-    def compute_distance_to_trajectory(self, hello_packet):
-
-        exp_position = self.compute_extimed_position(hello_packet)
-
-        #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
-        p1 = np.array([exp_position[0], exp_position[1]])
-        p2 = np.array([hello_packet.next_target[0], hello_packet.next_target[1]])
-        p3 = np.array([self.drone.depot.coords[0],self.drone.depot.coords[1]])
-   
-        return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
