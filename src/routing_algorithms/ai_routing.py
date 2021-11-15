@@ -194,6 +194,17 @@ class AIRouting(BASE_routing):
             except Exception as e:
                 
                 drone_iden = drone
+                
+            try:
+            	n = self.drone.n
+            except:
+                setattr(self.drone, "n", {})
+                
+            try:
+            	q = self.drone.q
+            except:
+                setattr(self.drone, "q", {})
+                
                         
             try:
                 self.drone.n[(drone_iden.identifier,drone_iden.next_target())] += 1
@@ -382,13 +393,13 @@ class AIRouting(BASE_routing):
         q_distance = best_drone_distance_from_depot
         
         try:
-        	q = self.drone.q
-        	n = self.drone.n
+           q = self.drone.q
+           n = self.drone.n
         except:
-		setattr(self.drone, "q", {})
-		q = self.drone.q
-		setattr(self.drone, "n", {})
-		n = self.drone.n
+           setattr(self.drone, "q", {})
+           q = self.drone.q
+           setattr(self.drone, "n", {})
+           n = self.drone.n
     
         a = True
         if a:
@@ -464,7 +475,7 @@ class AIRouting(BASE_routing):
                 except Exception as e:
                     continue
                
-        self.drone.q = n
+        self.drone.q = q
 
    
             
@@ -487,10 +498,6 @@ class AIRouting(BASE_routing):
 
 #        newEps = min_epsilon
   #      print(newEps)
-        try:
-            c[(newEps)] += 1
-        except: 
-            c[(newEps)] = 1
       #  newEps = max_epsilon
 #        except:
        # newEps = min_epsilon + (0*(max_epsilon-min_epsilon))
@@ -533,10 +540,10 @@ class AIRouting(BASE_routing):
            
             
         try:
-		Reward = self.drone.Reward
-	except
-		setattr(self.drone, "Reward", {})
-		Reward = self.drone.Reward
+           Reward = self.drone.Reward
+        except:
+           setattr(self.drone, "Reward", {})
+           Reward = self.drone.Reward
 	
         Reward[pkd.identifier] = max_action
         #return this random drone
@@ -728,7 +735,7 @@ class AIRouting(BASE_routing):
         if np.linalg.norm(b - a) != 0:
         	v_ = (b - a) / np.linalg.norm(b - a)
         else:
-        	v_ = [0, 0]
+        	v_ = 0
 
         # compute the expect position
         c = a + (distance_traveled * v_)
@@ -744,12 +751,12 @@ class AIRouting(BASE_routing):
         if np.linalg.norm(p2-p1) != 0:
         	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
         else: 
-        	return [0, 0]
+        	return 0
 
     def compute_distance_to_trajectory(self, hello_packet):
 
         exp_position = self.compute_extimed_position(hello_packet)
-        exp_position = hello_packet.cur_pos
+       # exp_position = hello_packet.cur_pos
 
         #MAYBE IT SHOULD BE p1 = np.array([exp_position[0][0], exp_position[0][1]])
         p1 = np.array([exp_position[0], exp_position[1]])
@@ -759,5 +766,4 @@ class AIRouting(BASE_routing):
         if np.linalg.norm(p2-p1) != 0:
         	return np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
         else: 
-        	return [0, 0]
-
+        	return 0
