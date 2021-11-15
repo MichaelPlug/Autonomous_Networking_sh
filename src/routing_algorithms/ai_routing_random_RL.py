@@ -227,12 +227,10 @@ class AIRouting(BASE_routing):
 
         """ arg min score  -> geographical approach, take the drone closest to the depot """
         
-        #we take our distance from the depot
-        best_drone_distance_from_depot = util.euclidean_distance(self.simulator.depot.coords, self.drone.coords)
-        best_drone_distance_from_depot = self.compute_distance_to_trajectory_s()
+
         #initially drone closest is us (we take to the depot the
         #packet without any help)
-        best_drone = None
+
         
        
         
