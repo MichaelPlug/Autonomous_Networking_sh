@@ -74,7 +74,7 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 yet_happened = []
 
 
-class AIRouting(BASE_routing):
+class AIRouting_random_RL(BASE_routing):
     
     
     
