@@ -73,7 +73,7 @@ yet_happened = []
 
 
 
-class AIRouting(BASE_routing):
+class AIRouting_georouting_upgraded(BASE_routing):
     
     
     

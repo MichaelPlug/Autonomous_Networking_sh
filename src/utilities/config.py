@@ -2,14 +2,21 @@
 from src.routing_algorithms.georouting import GeoRouting
 from src.routing_algorithms.random_routing import RandomRouting
 from src.routing_algorithms.closeset_to_me_routing import CloRouting
-from src.routing_algorithms.ai_routing import AIRouting
+from src.routing_algorithms.AI_Best import AIRouting
 
 #other imports
+from src.routing_algorithms.ai_routing_epsilon_greedy_normale_casuale import AIRouting_epsilon_greedy_normale_casuale
 #import src.routing_algorithms.ai_routing_epsilon_greedy_normale_casuale as AIRouting_epsilon_greedy_normale_casuale
-#import src.routing_algorithms.ai_routing_georouting_upgraded as AIRouting_georouting_upgraded
-#import src.routing_algorithms.ai_routing_random_RL as AIRouting_random_RL
-#import src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction as AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
-#import src.routing_algorithms.ai_routing_UCB as AIRouting_UCB
+from src.routing_algorithms.ai_routing_georouting_upgraded import AIRouting_georouting_upgraded
+
+
+
+from src.routing_algorithms.ai_none import AIRouting_None
+
+from src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction import AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
+
+
+from src.routing_algorithms.ai_routing_UCB import AIRouting_UCB
 
 
 
@@ -103,11 +110,11 @@ class RoutingAlgorithm(Enum):
     RND = RandomRouting
     CLO = CloRouting
     AI = AIRouting
-    #EGN = AIRouting_epsilon_greedy_normale_casuale
-    #GEOUP = AIRouting_georouting_upgraded
-    #RND_RL = AIRouting_random_RL
-    #EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
-    #UCB = AIRouting_UCB
+    EGN = AIRouting_epsilon_greedy_normale_casuale
+    GEOUP = AIRouting_georouting_upgraded
+    NONE = AIRouting_None
+    EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
+    UCB = AIRouting_UCB
 
     
     
@@ -127,7 +134,7 @@ class ChannelError(Enum):
         return list(map(lambda c: c.name, ChannelError))
 
 
-ROUTING_ALGORITHM = RoutingAlgorithm.AI
+ROUTING_ALGORITHM = RoutingAlgorithm.EGN
 CHANNEL_ERROR_TYPE = ChannelError.ON_DEVICE
 
 COMMUNICATION_P_SUCCESS = 1   # float: probability to have success in a communication.

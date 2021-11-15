@@ -102,7 +102,7 @@ def plot_ndrones(filename_format : list, ndrones :list, metric : str,
         for nd in n_drones:
             data_alg_k.append(mean_std_of_metric(filename_format, nd, alg_k, seeds, metric)[0])
         out_data[alg_k] = data_alg_k
-    
+    print(out_data) 
     ax = plt.subplot(111)
     fig = plt.gcf() # get current figure
     fig.set_size_inches(16, 10)
