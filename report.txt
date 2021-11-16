@@ -1,23 +1,30 @@
-Dai risultati ottenuti innanzitutto definiamo i vari approcci utillizzati:
+### APPUNTI
+- Forse sarebbe meglio di non parlare di georouting migliorato nel report ma trovare un nome tipo Georouting+ o qualcosa di più descrittivo, perché poi le prestazioni non sono migliori
+- L'AI è effettivamente il miglior routing? 
+
+-- DA RIVEDERE EGN CHE NON FA QUANTO DESCRITTO
+
+Innanzitutto definiamo quali sono gli approcci utilizzati:
 -Georouting: è il classico algoritmo che seleziona il nodo più vicino al depot per fornire il pacchetto
 -Random: questo algoritmo seleziona casualmente il nodo a cui passare il pacchetto tra i possibili vicini
 -CLO: si seleziona il nodo più vicino al nodo stesso per consegnargli il pacchetto stesso
--AI: Questo algoritmo è il migliore che è stato realizzato. In pratica con una probabilità epsilon si sfrutta il reinforcement learning (si ha "exploit"), mentre con una probabilità 1-epsilon si sfrutta l'algoritmo di georouting migliorato, il quale è sicuramente migliore rispetto all'approccio randomico
+-AI: Questo algoritmo è il migliore che è stato realizzato. (LO E'???) Con una probabilità epsilon si sfrutta il reinforcement learning (si ha "exploit"), mentre con una probabilità 1-epsilon si sfrutta l'algoritmo di georouting migliorato, il quale è sicuramente migliore rispetto all'approccio randomico. In caso il valoro massimo di q sia associato a più droni, tra questi verrà scelto, seconod la stessa logica del georouting migliorato, quello con la traiettoria più vicina alle coordinate del depot. Epsilon è stata definita con una funzione lineare inversamente proporzionale alla mole di informazioni utili presente nel dizionario del drone. In questo algoritmo i dizionari Q ed N sono stati costruiti usando oltre all'id dei droni anche la loro prossima destinazione.
 -EGN: Questo algoritmo implementa la classica idea dell'epsilon greedy --> Quindi con una probabilità 1-epsilon si adotta l'approccio di reinforcement learning (a parità di q value si sceglie quello che passa più vicino al depot, quindi con la distanza minore tra la traiettoria e il dopot), mentre con una probabilità epsilon si adotta l'approccio random
--GEOUP: Questo è l'algoritmo di georouting semplicemente migliorato, quindi si stima più correttamente la posizione del nodo vicino tramite un ricalcolo più preciso (infatti il valore che ci fornisce il nodo, tramite l'hello packet, è un valore "vecchio")
--NONE: questo algoritmo prevede il fatto che il nodo non passa mai il pacchetto ai vicini, ma lo porta avanti sempre e solo lui
+-EGN: questo algoritmo applica lo stesso principio dell'AI appena descritto, ma utilizzando il georouting classico anziché il georouting migliorato.
+-GEOUP: in questo algoritmo anziché applicare il georouting classico e prendere una decisione in base alla distanza tra i droni e il depot, viene utilizzata come fattore determinante la distanza minima tra la traiettoria dei droni le coordinate del depot, ovvero viene scelto il drone che passerà più vicino al depot
+-NONE: questo algoritmo prevede il fatto che il nodo non passi mai il pacchetto ai vicini, ma lo porti avanti sempre e solo lui
 -RND_RL: si sceglie uno dei possibili nodi vicini (o il nodo stesso) tramite una scelta randomica in base al Q value
--EGSOLOID: si utilizza l'approccio di epsilon greedy classico, solo che questo è l'unico algoritmo (insieme ad RND_RL) in cui il Q dictionary distingue ogni elemento dall'altro in base al nodo e non anche alla direzione in cui sta andando il nodo, quindi si fa una valutazione un pò più parziale
+-EGSOLOID: si utilizza l'approccio di epsilon greedy classico, solo che questo è l'unico algoritmo (insieme ad RND_RL) in cui i Q e N dictionary distinguono ogni elemento dall'altro solamente in base al nodo e non anche alla prossima destinazione, quindi si fa una valutazione un pò più parziale
 -UCB: Questo algoritmo implementa l'idea di scegliere il nodo vicino che ha più potenziale, quindi con l'intervallo di incertezza che ha un valore massimo maggiore
-BR: Si passa il pacchetto sempre al nodo con minore batteria, per far sì che magari si selezioni proprio il nodo che sta rientrando al depot sicuramente
+BR: Si passa il pacchetto esempre al nodo con minore batteria, per far sì che magari si selezioni un nodo prossimo al rientro al depot
 AIB: Con probabilità 1-epsilon si sfruttano le conoscenze del reinforcement learning, mentre con probabilità epsilon si seleziona il drone che ha meno batteria possibile
 AISGV: Con probabiltà 1-epsilon prende il drone con valore di q più alto (usando drone e posizione) e a parità di q sceglie quello più vicino al depot (quindi con la distanza minore tra la traiettoria e il depot). Con probabilità epsilon prende tra tutti quello più vicino al depot
 Con probabilità epsilon prende tra tutti quello più vicino al depot
 -OIV: Questo algoritmo implementa l'idea dell'optimistic initial value, quindi si ha una fase iniziale di esplorazione non indifferente non dovuta al fatto che si sceglie randomicamente spesso il nodo a cui passare il pacchetto
 
 Performance:
--Georouting: è un algoritmo estremamente prestante e che si adatta moltissimo alla situazione inerente i droni, visto che è un contesto che cambia continuamente
--Random: Questo approccio probabilisticamente a volte riesce anche ad fare la scelta ottimale, ma spesso e volentieri ciò non accade minimamente
+-Georouting: è un algoritmo estremamente prestante e che si adatta moltissimo alla situazione inerente Ai droni, visto che è un contesto che cambia continuamente
+-Random: Questo approccio probabilisticamente a volte riesce anche a fare la scelta ottimale, ma spesso e volentieri ciò non accade minimamente
 -CLO: è un algoritmo che non ha risultati molto eccelsi, perchè si potrebbero fare troppi passaggi di comunicazione o semplicemente si possono passare i pacchetti a droni che vanno in direzioni opposte, quindi non è concettualmente il massimo a livello di algoritmo
 -AI: 
 -EGN: 
