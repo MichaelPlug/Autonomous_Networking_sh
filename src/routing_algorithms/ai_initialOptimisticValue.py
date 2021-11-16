@@ -58,7 +58,7 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 #list of yet taken feedback
 yet_happened = []
 
-class AIRouting_OIV(BASE_routing):
+class AIRouting(BASE_routing):
     
    
     

@@ -58,7 +58,7 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
 
 
-class AIRouting_georouting_upgraded(BASE_routing):
+class AIRouting(BASE_routing):
     
     
     

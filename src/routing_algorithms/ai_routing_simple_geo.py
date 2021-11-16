@@ -58,7 +58,7 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
 
 
-class AIRoutingSimpleGeo(BASE_routing):
+class AIRouting(BASE_routing):
     
     
     
@@ -85,7 +85,7 @@ class AIRoutingSimpleGeo(BASE_routing):
         # STORE WHICH ACTION DID YOU TAKE IN THE PAST.
         # do something or train the model (?)
         
-       
+        print("SONO QUIII")
         
         #if the packet isn't still treated, then we train system for it
         if True:
@@ -167,8 +167,6 @@ class AIRoutingSimpleGeo(BASE_routing):
         #initially drone closest is us (we take to the depot the
         #packet without any help)
         best_drone = None
-        
-       
         
         
         
@@ -264,7 +262,7 @@ class AIRoutingSimpleGeo(BASE_routing):
                 try:
                     tot_n += n[(drone_istance.identifier,hello_packet.next_target)] 
                 except Exception as e:
-                    continue
+                    tot_n = tot_n
 
         self.drone.q = q
             
@@ -334,96 +332,7 @@ class AIRoutingSimpleGeo(BASE_routing):
         
         Reward[pkd.identifier] = max_action
         #return this random drone
-        return max_action
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-   
-        
-        """ ##!!
-        
-        "REINFORCEMENT LEARNING RANDOM"
-        max_action = None
-        list_neightbours = []
-        for hello_packet, drone_istance in opt_neighbors:
-            
-            list_neightbours.append(drone_istance)
-        
-        max_action = random.choice(list_neightbours)
-        
-        return max_action
-        "END REINFORCEMENT LEARNING RANDOM"
-        
-        """
-        
-        """##!!
-        
-        FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY
-        
-        #generate a random value between 0 and 1
-        rand = random.random()
-        
-        #with 1 - epsilon probability we choose the greedy approach
-        if (rand < (1-epsilon)):
-            
-            
-            
-            
-            #take the maximum value of q
-            max_q = q[self.drone.identifier]
-            
-            
-            
-            
-            #initially the packet remains with us
-            max_action = None
-            
-            #loop for every neighbors
-            for hello_packet, drone_istance in opt_neighbors:
-                
-                #if we have a more reliable node
-                if (q[drone_istance.identifier] > max_q):
-                    
-                    #select its best value for q function
-                    max_q = q[drone_istance.identifier]
-                    
-                    #select it
-                    max_action = drone_istance
-                    
-            
-        #with epsilon probability we choose the random approach
-        else:
-            
-            #create the list of neighbors
-            list_neighbors = []
-            
-            #loop for every drones
-            for hello_packet, drone_istance in opt_neighbors:
-                
-                #append istances of the drones
-                list_neighbors.append(drone_istance)
-                
-            #select one drone randomly
-            max_action = random.choice(list_neighbors)
-            
-            
-        #return this random drone
-        return max_action
-    
-        FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY        
-        
-        """
-                      
+        return max_action       
         
         #HERE BEGIN THE GEOGRAPHICAL ROUTING, BUT WE DON'T ARRIVE UNTIL HERE
         #TODO
@@ -492,9 +401,9 @@ class AIRoutingSimpleGeo(BASE_routing):
                 metrics about the learning process
         """
         
-        print("Hello", q)
-        print("Alo", n)
-        print("Salut", c)
         print(epsilon)
+        print("Concluso")
+        
+        
         pass
 

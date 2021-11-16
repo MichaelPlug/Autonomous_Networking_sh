@@ -84,11 +84,8 @@ class AIRouting(BASE_routing):
        
         
         #if the packet isn't still treated, then we train system for it
-        if (id_event not in yet_happened):
-        
-            #add it to list of visited packet (to avoid duplicates)
-            yet_happened.append(id_event)    
-
+        if True:
+   
             "Doubt: i don't know the utility of this"        
             if id_event in self.taken_actions:
                 action = self.taken_actions[id_event]

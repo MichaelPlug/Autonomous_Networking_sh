@@ -59,7 +59,7 @@ epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
 
 
-class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
+class AIRouting(BASE_routing):
     
     
     
@@ -135,12 +135,13 @@ class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
             	n = self.drone.n
             except:
                 setattr(self.drone, "n", {})
+                n = self.drone.n
                 
             try:
             	q = self.drone.q
             except:
                 setattr(self.drone, "q", {})
-            
+
             try:
             
                 self.drone.n[drone.identifier] += 1
@@ -155,10 +156,10 @@ class AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction(BASE_routing):
                 self.drone.n[drone.identifier] = 1
             
             
-                self.drone.q[drone.identifier] = 0
+        #        self.drone.q[drone.identifier] = 0
             
                 #calculate incrementally the reward
-                self.drone.q[drone.identifier] = q[drone.identifier] + ((1/(n[drone.identifier]))*(R - q[drone.identifier])) 
+                self.drone.q[drone.identifier] = R 
             
             
             ##!!END FOR NORMAL REINFORCEMENT LEARNING AND NORMAL Q ARRAY

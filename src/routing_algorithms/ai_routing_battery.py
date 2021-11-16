@@ -56,12 +56,9 @@ epsilon = random.random()
 #normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
-#list of yet taken feedback
-yet_happened = []
 
 
-
-class AIRoutingBattery(BASE_routing):
+class AIRouting(BASE_routing):
     
     
     
@@ -88,8 +85,7 @@ class AIRoutingBattery(BASE_routing):
         # STORE WHICH ACTION DID YOU TAKE IN THE PAST.
         # do something or train the model (?)
         
-       
-        
+        print("sono qui")
         #if the packet isn't still treated, then we train system for it
         if True:
 
@@ -142,11 +138,13 @@ class AIRoutingBattery(BASE_routing):
             	n = self.drone.n
             except:
                 setattr(self.drone, "n", {})
+                n = self.drone.n
                 
             try:
             	q = self.drone.q
             except:
                 setattr(self.drone, "q", {})
+                q = self.drone.q
                 
             try:
                 self.drone.n[(drone_iden.identifier,drone_iden.next_target())] += 1
@@ -219,8 +217,6 @@ class AIRoutingBattery(BASE_routing):
 
             #loop for every neighbors
             for hello_packet, drone_istance in opt_neighbors:
-                
-                
 
                 try:                
                 
@@ -399,5 +395,6 @@ class AIRoutingBattery(BASE_routing):
         print("Salut", c)
         print(epsilon)
         """
+        print("my k:")
         
         pass

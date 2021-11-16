@@ -135,6 +135,7 @@ class AIRouting(BASE_routing):
             	n = self.drone.n
             except:
                 setattr(self.drone, "n", {})
+                n = self.drone.n
                 
             try:
             	q = self.drone.q

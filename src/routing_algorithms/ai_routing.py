@@ -55,8 +55,6 @@ epsilon = random.random()
 #normalize the random value from min_epsilon to max_epsilon
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
-#list of yet taken feedback
-yet_happened = []
 
 
 
@@ -711,6 +709,7 @@ class AIRouting(BASE_routing):
         print("Salut", c)
         print(epsilon)
         """
+        print("Qui funziona")
         
         pass
 
