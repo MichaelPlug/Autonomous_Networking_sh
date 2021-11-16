@@ -293,7 +293,7 @@ class AIRoutingBattery(BASE_routing):
         #newEps = max_epsilon
  #       newEps =  min_epsilon + (math.exp(-1*(tot_n**2)/(k**4)) * (max_epsilon - min_epsilon)) 
 
-        if rand < new_eps :
+        if rand < newEps :
             
             max_action = None
             
