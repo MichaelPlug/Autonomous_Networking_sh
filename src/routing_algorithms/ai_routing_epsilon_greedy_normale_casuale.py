@@ -56,7 +56,7 @@ epsilon = random.random()
 epsilon = min_epsilon + (epsilon * (max_epsilon - min_epsilon))
 
 
-class AIRouting_epsilon_greedy_normale_casuale(BASE_routing):
+class AIRouting(BASE_routing):
     
     
     
