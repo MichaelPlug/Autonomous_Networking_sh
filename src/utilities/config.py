@@ -2,20 +2,23 @@
 from src.routing_algorithms.georouting import GeoRouting
 from src.routing_algorithms.random_routing import RandomRouting
 from src.routing_algorithms.closeset_to_me_routing import CloRouting
-from src.routing_algorithms.AI_Best import AIRouting
+#from src.routing_algorithms.AI_Best import AIRouting
 
 #other imports
 
 from src.routing_algorithms.battery_routing import BatteryRouting
-from src.routing_algorithms.ai_routing_simple_geo import AIRoutingSimpleGeo
-from src.routing_algorithms.ai_routing_battery import AIRoutingBattery
-from src.routing_algorithms.ai_routing_epsilon_greedy_normale_casuale import AIRouting_epsilon_greedy_normale_casuale
-from src.routing_algorithms.ai_routing_georouting_upgraded import AIRouting_georouting_upgraded
-from src.routing_algorithms.ai_routing_random_RL import AIRouting_random_RL
-from src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction import AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
-from src.routing_algorithms.ai_routing_UCB import AIRouting_UCB
+#from src.routing_algorithms.ai_routing_simple_geo import AIRouting
+#from src.routing_algorithms.ai_routing_battery import AIRouting
+
+#from src.routing_algorithms.ai_routing_epsilon_greedy_normale_casuale import AIRouting
+#from src.routing_algorithms.ai_routing_georouting_upgraded import AIRouting
+from src.routing_algorithms.ai_routing_random_RL import AIRouting
+#from src.routing_algorithms.ai_routing_RL_epsilongGreedy_solo_identifier_NO_direction import AIRouting
+#from src.routing_algorithms.ai_routing_UCB import AIRouting
 from src.routing_algorithms.ai_none import AIRouting_None
-from src.routing_algorithms.ai_initialOptimisticValue import AIRouting_OIV
+
+
+#from src.routing_algorithms.ai_initialOptimisticValue import AIRouting
 
 
 
@@ -109,16 +112,16 @@ class RoutingAlgorithm(Enum):
     RND = RandomRouting
     CLO = CloRouting
     AI = AIRouting
-    EGN = AIRouting_epsilon_greedy_normale_casuale
-    GEOUP = AIRouting_georouting_upgraded
+ #   EGN = AIRouting
+    #GEOUP = AIRouting
     NONE = AIRouting_None
-    RND_RL = AIRouting_random_RL
-    EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
-    UCB = AIRouting_UCB
+    #RND_RL = AIRouting_random_RL
+    #EGSOLOID = AIRouting_RL_epsilonGreedy_solo_identifier_NO_direction
+   # UCB = AIRouting_UCB
     BR = BatteryRouting
-    AIB = AIRoutingBattery
-    AISG = AIRoutingSimpleGeo
-    OIV = AIRouting_OIV
+    #AIB = AIRouting
+    #AISG = AIRouting
+    #OIV = AIRouting
     
     
 
@@ -137,7 +140,7 @@ class ChannelError(Enum):
         return list(map(lambda c: c.name, ChannelError))
 
 
-ROUTING_ALGORITHM = RoutingAlgorithm.GEO
+ROUTING_ALGORITHM = RoutingAlgorithm.BR
 CHANNEL_ERROR_TYPE = ChannelError.ON_DEVICE
 
 COMMUNICATION_P_SUCCESS = 1   # float: probability to have success in a communication.
